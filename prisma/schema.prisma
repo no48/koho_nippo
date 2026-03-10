@@ -1,0 +1,247 @@
+// Prisma Schema for 運送業基幹システム MVP版
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ユーザー（認証用）
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // 作成・更新履歴のリレーション
+  createdDailyReports   DailyReport[]   @relation("DailyReportCreatedBy")
+  updatedDailyReports   DailyReport[]   @relation("DailyReportUpdatedBy")
+  createdInvoices       Invoice[]       @relation("InvoiceCreatedBy")
+  updatedInvoices       Invoice[]       @relation("InvoiceUpdatedBy")
+  createdPayrolls       Payroll[]       @relation("PayrollCreatedBy")
+  updatedPayrolls       Payroll[]       @relation("PayrollUpdatedBy")
+  createdChecklistItems ChecklistItem[] @relation("ChecklistItemCreatedBy")
+  updatedChecklistItems ChecklistItem[] @relation("ChecklistItemUpdatedBy")
+}
+
+// トラック
+model Truck {
+  id            Int       @id @default(autoincrement())
+  vehicleNumber String    @map("vehicle_number")
+  vehicleName   String    @map("vehicle_name")
+  memo          String?
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  employees     TruckEmployee[]
+  dailyReports  DailyReport[]
+
+  @@map("trucks")
+}
+
+// 従業員
+model Employee {
+  id            Int       @id @default(autoincrement())
+  name          String
+  nameKana      String    @map("name_kana")
+  phone         String?
+  memo          String?
+  baseSalary    Decimal?  @map("base_salary") @db.Decimal(10, 0)  // 基本給
+  wageType      String?   @map("wage_type")  // 給与形態: 大型, 常用, 4t, etc.
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  trucks        TruckEmployee[]
+  dailyReports  DailyReport[]
+  payrolls      Payroll[]
+
+  @@map("employees")
+}
+
+// トラック・従業員紐付け（多対多）
+model TruckEmployee {
+  id          Int       @id @default(autoincrement())
+  truckId     Int       @map("truck_id")
+  employeeId  Int       @map("employee_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  truck       Truck     @relation(fields: [truckId], references: [id], onDelete: Cascade)
+  employee    Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([truckId, employeeId])
+  @@map("truck_employee")
+}
+
+// 得意先
+model Customer {
+  id            Int       @id @default(autoincrement())
+  name          String
+  address       String?
+  phone         String?
+  email         String?   // 請求書送付先メールアドレス
+  contactPerson String?   @map("contact_person")
+  memo          String?
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  dailyReports  DailyReport[]
+  invoices      Invoice[]
+
+  @@map("customers")
+}
+
+// 日報
+model DailyReport {
+  id           Int       @id @default(autoincrement())
+  reportNumber String    @unique @map("report_number")
+  reportDate   DateTime  @map("report_date") @db.Date
+  reportType   String?   @map("report_type")  // 日報種類（集計、チャーターなど）
+  employeeId  Int       @map("employee_id")
+  truckId     Int       @map("truck_id")
+  customerId  Int       @map("customer_id")
+  origin      String
+  destination String
+  productName String?   @map("product_name")  // 品名
+  quantity    Int?                             // 数量
+  tonnage     Decimal?  @db.Decimal(5, 2)     // t数
+  fare        Decimal   @db.Decimal(12, 0)
+  salary      Decimal?  @db.Decimal(12, 0)     // 給与（ドライバーへの支払額）
+  tollFee     Decimal?  @default(0) @map("toll_fee") @db.Decimal(12, 0)  // 通行料
+  distanceAllowance Decimal? @default(0) @map("distance_allowance") @db.Decimal(12, 0) // 距離手当
+  invoiceItemId Int?      @map("invoice_item_id")  // 請求書明細との紐付け（請求書→日報フロー用）
+  itemMemo    String?   @map("item_memo")     // 明細備考
+  workItems   String?   @map("work_items")    // JSON: ["基本給", "2回目"] 選択された作業項目
+  wageType    String?   @map("wage_type")     // 給与形態: 大型, 常用, 4t, etc.
+  memo        String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  createdById String?   @map("created_by_id")
+  updatedById String?   @map("updated_by_id")
+
+  employee    Employee  @relation(fields: [employeeId], references: [id])
+  truck       Truck     @relation(fields: [truckId], references: [id])
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  createdBy   User?     @relation("DailyReportCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy   User?     @relation("DailyReportUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  invoiceItems InvoiceItem[]
+  invoiceItem  InvoiceItem? @relation("InvoiceItemReports", fields: [invoiceItemId], references: [id], onDelete: SetNull)
+
+  @@map("daily_reports")
+}
+
+// 請求書
+model Invoice {
+  id            Int       @id @default(autoincrement())
+  invoiceNumber String    @unique @map("invoice_number")
+  customerId    Int       @map("customer_id")
+  issueDate     DateTime  @map("issue_date") @db.Date
+  subtotal      Decimal   @db.Decimal(12, 0)
+  tax           Decimal   @db.Decimal(12, 0)
+  total         Decimal   @db.Decimal(12, 0)
+  status        String    @default("draft")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  createdById   String?   @map("created_by_id")
+  updatedById   String?   @map("updated_by_id")
+
+  customer      Customer  @relation(fields: [customerId], references: [id])
+  createdBy     User?     @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy     User?     @relation("InvoiceUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  items         InvoiceItem[]
+
+  @@map("invoices")
+}
+
+// 請求書明細
+model InvoiceItem {
+  id            Int       @id @default(autoincrement())
+  invoiceId     Int       @map("invoice_id")
+  dailyReportId Int?      @map("daily_report_id")
+  itemDate      DateTime  @map("item_date") @db.Date
+  description   String
+  amount        Decimal   @db.Decimal(12, 0)
+  tollFee       Decimal?  @default(0) @map("toll_fee") @db.Decimal(12, 0)  // 手動入力用通行料
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  invoice       Invoice     @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  dailyReport   DailyReport? @relation(fields: [dailyReportId], references: [id])
+  dailyReports  DailyReport[] @relation("InvoiceItemReports")  // 請求書→日報フロー用
+
+  @@map("invoice_items")
+}
+
+// 給料明細
+model Payroll {
+  id              Int       @id @default(autoincrement())
+  employeeId      Int       @map("employee_id")
+  yearMonth       String    @map("year_month")
+  baseSalary      Decimal   @map("base_salary") @db.Decimal(10, 0)
+  allowances      Json      @default("[]")
+  deductions      Json      @default("[]")
+  grossPay        Decimal   @map("gross_pay") @db.Decimal(12, 0)
+  totalDeduction  Decimal   @map("total_deduction") @db.Decimal(12, 0)
+  netPay          Decimal   @map("net_pay") @db.Decimal(12, 0)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  createdById     String?   @map("created_by_id")
+  updatedById     String?   @map("updated_by_id")
+
+  employee        Employee  @relation(fields: [employeeId], references: [id])
+  createdBy       User?     @relation("PayrollCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy       User?     @relation("PayrollUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@unique([employeeId, yearMonth])
+  @@map("payrolls")
+}
+
+// 設定
+model Setting {
+  id        Int       @id @default(autoincrement())
+  key       String    @unique
+  value     String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
+
+// 確認事項（TODOリスト）
+model ChecklistItem {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  isCompleted Boolean   @default(false) @map("is_completed")
+  dueDate     DateTime? @map("due_date") @db.Date
+  priority    String    @default("medium") // low, medium, high
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  createdById String?   @map("created_by_id")
+  updatedById String?   @map("updated_by_id")
+
+  createdBy   User?     @relation("ChecklistItemCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  updatedBy   User?     @relation("ChecklistItemUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+
+  @@map("checklist_items")
+}
+
+// 単価マスタ（給与形態 × 作業項目 → 単価）
+model WageRate {
+  id        Int      @id @default(autoincrement())
+  wageType  String   @map("wage_type")   // 大型, 常用, 4t, フォーク作業, ライトバン
+  workItem  String   @map("work_item")   // 基本給, 2回目, 有給, 引取り, 移動...
+  rate      Decimal  @db.Decimal(10, 0)  // 単価
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([wageType, workItem])
+  @@map("wage_rates")
+}
