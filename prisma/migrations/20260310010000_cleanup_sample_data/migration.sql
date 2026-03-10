@@ -5,7 +5,6 @@ DELETE FROM "invoices";
 DELETE FROM "payrolls";
 DELETE FROM "truck_employee";
 DELETE FROM "checklist_items";
-DELETE FROM "wage_rates";
 DELETE FROM "employees";
 DELETE FROM "trucks";
 DELETE FROM "customers";
