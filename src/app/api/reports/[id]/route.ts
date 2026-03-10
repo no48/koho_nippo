@@ -78,7 +78,7 @@ export async function PUT(
       memo,
     } = body;
 
-    if (!reportDate || !employeeId || !truckId || !customerId || !origin || !destination || fare === undefined) {
+    if (!reportDate || !employeeId || !customerId || !origin || !destination || fare === undefined) {
       return NextResponse.json(
         { error: "必須項目を入力してください" },
         { status: 400 }
@@ -91,7 +91,7 @@ export async function PUT(
     const parsedCustomerId = safeParseInt(customerId);
     const parsedFare = safeParseInt(fare);
 
-    if (parsedEmployeeId === null || parsedTruckId === null || parsedCustomerId === null || parsedFare === null) {
+    if (parsedEmployeeId === null || parsedCustomerId === null || parsedFare === null) {
       return NextResponse.json({ error: "IDまたは運賃が無効です" }, { status: 400 });
     }
 
@@ -101,7 +101,7 @@ export async function PUT(
         reportDate: new Date(reportDate),
         reportType: reportType || null,
         employeeId: parsedEmployeeId,
-        truckId: parsedTruckId,
+        truckId: parsedTruckId || null,
         customerId: parsedCustomerId,
         origin,
         destination,

@@ -52,7 +52,7 @@ type DailyReport = {
   reportNumber: string;
   reportDate: string;
   employee: Employee;
-  truck: Truck;
+  truck?: Truck | null;
   customer: Customer;
   origin: string;
   destination: string;
@@ -403,7 +403,7 @@ export default function ReportsPage() {
                     <TableCell className="font-mono text-sm">{report.reportNumber}</TableCell>
                     <TableCell>{formatDate(report.reportDate)}</TableCell>
                     <TableCell>{report.employee.name}</TableCell>
-                    <TableCell>{report.truck.vehicleNumber}</TableCell>
+                    <TableCell>{report.truck?.vehicleNumber || "-"}</TableCell>
                     <TableCell>{report.customer.name}</TableCell>
                     <TableCell>{report.origin}</TableCell>
                     <TableCell>{report.destination}</TableCell>

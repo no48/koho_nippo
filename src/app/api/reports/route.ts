@@ -99,7 +99,7 @@ export async function POST(request: Request) {
       invoiceItemId,  // 請求書→日報フロー用
     } = body;
 
-    if (!reportDate || !employeeId || !truckId || !customerId || !origin || !destination || fare === undefined) {
+    if (!reportDate || !employeeId || !customerId || !origin || !destination || fare === undefined) {
       return NextResponse.json(
         { error: "必須項目を入力してください" },
         { status: 400 }
@@ -114,9 +114,6 @@ export async function POST(request: Request) {
 
     if (parsedEmployeeId === null) {
       return NextResponse.json({ error: "従業員IDは有効な数値を入力してください" }, { status: 400 });
-    }
-    if (parsedTruckId === null) {
-      return NextResponse.json({ error: "トラックIDは有効な数値を入力してください" }, { status: 400 });
     }
     if (parsedCustomerId === null) {
       return NextResponse.json({ error: "得意先IDは有効な数値を入力してください" }, { status: 400 });
@@ -153,7 +150,7 @@ export async function POST(request: Request) {
           reportDate: new Date(reportDate),
           reportType: reportType || null,
           employeeId: parsedEmployeeId,
-          truckId: parsedTruckId,
+          truckId: parsedTruckId || null,
           customerId: parsedCustomerId,
           origin,
           destination,

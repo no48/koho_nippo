@@ -43,7 +43,7 @@ type DailyReport = {
   reportDate: string;
   reportType: string | null;
   employeeId: number;
-  truckId: number;
+  truckId: number | null;
   customerId: number;
   customer?: { id: number; name: string };
   employee?: { id: number; name: string; wageType: string | null };
@@ -318,20 +318,18 @@ export function ReportForm({ report, isEdit = false }: ReportFormProps) {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="truckId">
-                トラック <span className="text-destructive">*</span>
-              </Label>
+              <Label htmlFor="truckId">トラック</Label>
               <Select
-                value={formData.truckId}
+                value={formData.truckId || "_none"}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, truckId: value })
+                  setFormData({ ...formData, truckId: value === "_none" ? "" : value })
                 }
-                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="トラックを選択" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="_none">（未選択）</SelectItem>
                   {trucks.map((truck) => (
                     <SelectItem key={truck.id} value={truck.id.toString()}>
                       {truck.vehicleNumber} ({truck.vehicleName})

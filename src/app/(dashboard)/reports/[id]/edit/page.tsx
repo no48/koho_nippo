@@ -9,7 +9,7 @@ type DailyReport = {
   reportDate: string;
   reportType: string | null;
   employeeId: number;
-  truckId: number;
+  truckId: number | null;
   customerId: number;
   customer?: { id: number; name: string };
   employee?: { id: number; name: string; wageType: string | null };
