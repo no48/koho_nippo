@@ -248,7 +248,7 @@ export function InvoicePDF({ invoice, settings }: InvoicePDFProps) {
           <View style={styles.tableRow}>
             <Text style={[styles.tableHeader, { width: "8%" }]}>月日</Text>
             <Text style={[styles.tableHeader, { width: "23%" }]}>発地名</Text>
-            <Text style={[styles.tableHeader, { width: "23%" }]}>着地名</Text>
+            <Text style={[styles.tableHeader, { width: "23%" }]}>納品先</Text>
             <Text style={[styles.tableHeader, { width: "20%" }]}>品名</Text>
             <Text style={[styles.tableHeader, { width: "12%" }]}>通行料</Text>
             <Text style={[styles.tableHeader, { width: "14%" }]}>金額</Text>

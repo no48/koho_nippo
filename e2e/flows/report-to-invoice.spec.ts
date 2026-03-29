@@ -36,7 +36,7 @@ test.describe("日報→請求書フロー", () => {
       truckId: truck.id,
       customerId: customer.id,
       origin: `${testPrefix}フロー発地A`,
-      destination: `${testPrefix}フロー着地A`,
+      destination: `${testPrefix}フロー納品先A`,
       fare: 30000,
       tollFee: 1500,
     });
@@ -48,7 +48,7 @@ test.describe("日報→請求書フロー", () => {
       truckId: truck.id,
       customerId: customer.id,
       origin: `${testPrefix}フロー発地B`,
-      destination: `${testPrefix}フロー着地B`,
+      destination: `${testPrefix}フロー納品先B`,
       fare: 20000,
     });
     cleanup.track("report", report2.id);

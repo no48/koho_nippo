@@ -386,7 +386,7 @@ export default function ReportsPage() {
                   <TableHead>トラック</TableHead>
                   <TableHead>得意先</TableHead>
                   <TableHead>発地</TableHead>
-                  <TableHead>着地</TableHead>
+                  <TableHead>納品先</TableHead>
                   <TableHead className="text-right">運賃</TableHead>
                   <TableHead className="w-[100px]">操作</TableHead>
                 </TableRow>

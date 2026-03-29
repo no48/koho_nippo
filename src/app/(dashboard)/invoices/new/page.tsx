@@ -356,7 +356,7 @@ function NewInvoicePageContent() {
                           <TableHead className="w-12"></TableHead>
                           <TableHead>日付</TableHead>
                           <TableHead>従業員</TableHead>
-                          <TableHead>発着地</TableHead>
+                          <TableHead>発地/納品先</TableHead>
                           <TableHead>作業項目</TableHead>
                           <TableHead className="text-right">運賃</TableHead>
                         </TableRow>
@@ -446,7 +446,7 @@ function NewInvoicePageContent() {
                           />
                         </div>
                         <div className="col-span-3 space-y-2">
-                          <Label>説明（発着地、品名など）</Label>
+                          <Label>説明（発地/納品先、品名など）</Label>
                           <Input
                             type="text"
                             value={item.description}

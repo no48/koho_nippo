@@ -94,7 +94,7 @@ test.describe("日報CRUD", () => {
       truckId: truck.id,
       customerId: customer.id,
       origin: `${testPrefix}API発地`,
-      destination: `${testPrefix}API着地`,
+      destination: `${testPrefix}API納品先`,
       fare: 25000,
     });
     cleanup.track("report", report.id);

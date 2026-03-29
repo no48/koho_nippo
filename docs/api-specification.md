@@ -698,7 +698,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
     "truckId": "number",
     "customerId": "number",
     "origin": "string (発地)",
-    "destination": "string (着地)",
+    "destination": "string (納品先)",
     "productName": "string | null (品名)",
     "quantity": "number | null (数量)",
     "tonnage": "string | null (Decimal, t数)",
@@ -748,7 +748,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 | truckId | number | 必須 | 車両ID |
 | customerId | number | 必須 | 得意先ID |
 | origin | string | 必須 | 発地 |
-| destination | string | 必須 | 着地 |
+| destination | string | 必須 | 納品先 |
 | productName | string | 任意 | 品名 |
 | fare | number | 必須 | 運賃 |
 | salary | number | 任意 | 給与（ドライバーへの支払額） |
@@ -1039,7 +1039,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 
 ### GET /api/reports/suggestions
 
-発地・着地のオートコンプリート候補を取得する。
+発地・納品先のオートコンプリート候補を取得する。
 
 **認証要否**: 必須 (requireAuth)
 
@@ -1353,7 +1353,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
   - 会社情報: 会社名、住所、電話番号、FAX、振込口座情報
   - サマリーテーブル: 当月売上額、通行料合計、消費税額、当月分請求額
   - インボイス登録番号
-  - 明細テーブル: 月日、発地名、着地名、品名、金額
+  - 明細テーブル: 月日、発地名、納品先、品名、金額
   - 空行の自動補填（最低10行）
   - 税区分サマリー: 10%対象金額、消費税額、小計、合計
 - 通行料の計算は複数ソースを合算:
@@ -2424,7 +2424,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
   - 会社情報（会社名、住所、電話、FAX、振込口座）
   - サマリーテーブル（売上額、通行料、消費税、請求額）
   - インボイス登録番号
-  - 明細テーブル（月日、発地、着地、品名、金額）。最低10行表示（空行で補填）
+  - 明細テーブル（月日、発地、納品先、品名、金額）。最低10行表示（空行で補填）
   - 税区分サマリー（10%対象金額、消費税額、小計、合計）
 
 ---
@@ -2459,7 +2459,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 | 日報 | GET | `/api/reports/unbilled` | 未請求日報取得 |
 | 日報 | GET | `/api/reports/by-employee` | 従業員別日報取得 |
 | 日報 | GET | `/api/reports/by-ids` | ID指定日報取得 |
-| 日報 | GET | `/api/reports/suggestions` | 発着地候補取得 |
+| 日報 | GET | `/api/reports/suggestions` | 発地/納品先候補取得 |
 | 請求書 | GET | `/api/invoices` | 請求書一覧取得 |
 | 請求書 | POST | `/api/invoices` | 請求書作成 |
 | 請求書 | GET | `/api/invoices/[id]` | 請求書詳細取得 |

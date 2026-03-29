@@ -41,7 +41,7 @@ test.describe("請求書CRUD", () => {
     await page.getByRole("button", { name: "明細を追加" }).click();
 
     // Fill manual item fields
-    await page.getByLabel("説明（発着地、品名など）").fill(
+    await page.getByLabel("説明（発地/納品先、品名など）").fill(
       `${testPrefix}埼玉 → 茨城 段ボール`
     );
 

@@ -72,7 +72,7 @@ export async function GET(
           totalTollFee = Number(item.tollFee ?? 0);
         }
 
-        // 発着地と品名（日報から取得、複数ソースを考慮）
+        // 発地/納品先と品名（日報から取得、複数ソースを考慮）
         const origin = item.dailyReport?.origin || item.dailyReports?.[0]?.origin || null;
         const destination = item.dailyReport?.destination || item.dailyReports?.[0]?.destination || null;
         const productName = item.dailyReport?.productName || item.dailyReports?.[0]?.productName || null;

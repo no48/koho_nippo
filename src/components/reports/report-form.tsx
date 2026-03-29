@@ -457,7 +457,7 @@ export function ReportForm({ report, isEdit = false }: ReportFormProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="destination">
-                着地 <span className="text-destructive">*</span>
+                納品先 <span className="text-destructive">*</span>
               </Label>
               <AutocompleteInput
                 id="destination"

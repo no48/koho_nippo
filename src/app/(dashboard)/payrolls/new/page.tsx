@@ -329,7 +329,7 @@ export default function NewPayrollPage() {
                         <TableRow>
                           <TableHead>日付</TableHead>
                           <TableHead>得意先</TableHead>
-                          <TableHead>発着地</TableHead>
+                          <TableHead>発地/納品先</TableHead>
                           <TableHead className="text-right">運賃</TableHead>
                         </TableRow>
                       </TableHeader>

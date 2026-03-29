@@ -250,7 +250,7 @@ export default function InvoiceDetailPage({
     if (!selectedItem || !invoice) return;
 
     if (!reportFormData.employeeId || !reportFormData.truckId || !reportFormData.origin || !reportFormData.destination) {
-      toast.error("従業員、トラック、発地、着地は必須です");
+      toast.error("従業員、トラック、発地、納品先は必須です");
       return;
     }
 
@@ -546,7 +546,7 @@ export default function InvoiceDetailPage({
               <tr className="bg-gray-100">
                 <th className="border border-black py-1 px-2 w-16">月日</th>
                 <th className="border border-black py-1 px-2">発地名</th>
-                <th className="border border-black py-1 px-2">着地名</th>
+                <th className="border border-black py-1 px-2">納品先</th>
                 <th className="border border-black py-1 px-2">品名</th>
                 <th className="border border-black py-1 px-2 w-20 text-right">通行料</th>
                 <th className="border border-black py-1 px-2 w-24 text-right">金額</th>
@@ -576,7 +576,7 @@ export default function InvoiceDetailPage({
                 // 日報数（日報→請求書フローと請求書→日報フローの合計）
                 const reportCount = (item.dailyReport ? 1 : 0) + (item.dailyReports?.length || 0);
 
-                // 発着地と品名（日報から取得、なければ手動入力時は説明から推測）
+                // 発地/納品先と品名（日報から取得、なければ手動入力時は説明から推測）
                 const origin = item.dailyReport?.origin || item.dailyReports?.[0]?.origin || "-";
                 const destination = item.dailyReport?.destination || item.dailyReports?.[0]?.destination || "-";
                 const productName = item.dailyReport?.productName || item.dailyReports?.[0]?.productName || "-";
@@ -865,7 +865,7 @@ export default function InvoiceDetailPage({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>着地 <span className="text-destructive">*</span></Label>
+                    <Label>納品先 <span className="text-destructive">*</span></Label>
                     <AutocompleteInput
                       id="modal-destination"
                       value={reportFormData.destination}

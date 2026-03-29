@@ -83,7 +83,7 @@ test.describe("請求書→日報作成フロー", () => {
 
     // Fill origin/destination
     await page.getByPlaceholder("例: 埼玉県杉戸町 平田倉庫㈱").fill(`${testPrefix}逆フロー発地`);
-    await page.getByPlaceholder("例: 茨城県常総市 王子コンテナー㈱").fill(`${testPrefix}逆フロー着地`);
+    await page.getByPlaceholder("例: 茨城県常総市 王子コンテナー㈱").fill(`${testPrefix}逆フロー納品先`);
 
     // Submit
     await page.getByRole("button", { name: "日報を作成" }).click();
@@ -170,7 +170,7 @@ test.describe("請求書→日報作成フロー", () => {
       .click();
 
     await page.getByPlaceholder("例: 埼玉県杉戸町 平田倉庫㈱").fill(`${testPrefix}通行料発地`);
-    await page.getByPlaceholder("例: 茨城県常総市 王子コンテナー㈱").fill(`${testPrefix}通行料着地`);
+    await page.getByPlaceholder("例: 茨城県常総市 王子コンテナー㈱").fill(`${testPrefix}通行料納品先`);
 
     // Add toll fee on the report too (1500)
     // "通行料（税込）" label is followed by an input with placeholder "1000"
