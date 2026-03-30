@@ -9,7 +9,7 @@ test.describe("日報→請求書フロー", () => {
   }) => {
     // Prepare test data
     const customer = await api.createCustomer({
-      name: `${testPrefix}フロー得意先`,
+      name: `${testPrefix}フロー発注元`,
     });
     cleanup.track("customer", customer.id);
 
@@ -88,7 +88,7 @@ test.describe("日報→請求書フロー", () => {
     await expect(page.getByText("請求書作成")).toBeVisible();
 
     // Customer should be pre-filled
-    await expect(page.getByText(`${testPrefix}フロー得意先`)).toBeVisible();
+    await expect(page.getByText(`${testPrefix}フロー発注元`)).toBeVisible();
 
     // Both reports should be checked
     await expect(page.getByText(`${testPrefix}フロー発地A`)).toBeVisible();
@@ -100,7 +100,7 @@ test.describe("日報→請求書フロー", () => {
 
     // Step 6: Find the created invoice and verify
     const invoiceRow = page.locator("tr", {
-      hasText: `${testPrefix}フロー得意先`,
+      hasText: `${testPrefix}フロー発注元`,
     });
     await expect(invoiceRow).toBeVisible();
 
@@ -110,7 +110,7 @@ test.describe("日報→請求書フロー", () => {
     // Verify amounts on detail page
     await expect(page.getByText("請求明細書")).toBeVisible();
     await expect(
-      page.getByText(`${testPrefix}フロー得意先`)
+      page.getByText(`${testPrefix}フロー発注元`)
     ).toBeVisible();
 
     // Verify calculated amounts on the summary table

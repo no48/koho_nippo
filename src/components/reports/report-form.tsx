@@ -279,7 +279,7 @@ export function ReportForm({ report, isEdit = false }: ReportFormProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="customerId">
-                得意先 <span className="text-destructive">*</span>
+                発注元 <span className="text-destructive">*</span>
               </Label>
               <CustomerAutocomplete
                 id="customerId"
@@ -287,7 +287,7 @@ export function ReportForm({ report, isEdit = false }: ReportFormProps) {
                 onSelect={(customerId, customerName) =>
                   setFormData({ ...formData, customerId, customerName })
                 }
-                placeholder="得意先名を入力"
+                placeholder="発注元名を入力"
                 required
               />
             </div>

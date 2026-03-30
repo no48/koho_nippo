@@ -221,7 +221,7 @@ export default function ReportsPage() {
     }
 
     if (!hasSameCustomer) {
-      toast.error("異なる得意先の日報が選択されています。同じ得意先の日報のみ選択してください。");
+      toast.error("異なる発注元の日報が選択されています。同じ発注元の日報のみ選択してください。");
       return;
     }
 
@@ -341,10 +341,10 @@ export default function ReportsPage() {
         <div className="w-48">
           <Select value={selectedCustomerId} onValueChange={setSelectedCustomerId}>
             <SelectTrigger>
-              <SelectValue placeholder="得意先で絞り込み" />
+              <SelectValue placeholder="発注元で絞り込み" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">すべての得意先</SelectItem>
+              <SelectItem value="all">すべての発注元</SelectItem>
               {customers.map((cust) => (
                 <SelectItem key={cust.id} value={cust.id.toString()}>
                   {cust.name}
@@ -384,7 +384,7 @@ export default function ReportsPage() {
                   <TableHead>日付</TableHead>
                   <TableHead>従業員</TableHead>
                   <TableHead>トラック</TableHead>
-                  <TableHead>得意先</TableHead>
+                  <TableHead>発注元</TableHead>
                   <TableHead>発地</TableHead>
                   <TableHead>納品先</TableHead>
                   <TableHead className="text-right">運賃</TableHead>
@@ -470,7 +470,7 @@ export default function ReportsPage() {
               <>
                 <span className="font-medium text-foreground">{selectedReportIds.length}件</span> 選択中
                 {!hasSameCustomer && (
-                  <span className="ml-2 text-destructive">※異なる得意先が含まれています</span>
+                  <span className="ml-2 text-destructive">※異なる発注元が含まれています</span>
                 )}
               </>
             ) : (

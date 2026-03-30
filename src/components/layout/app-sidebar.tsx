@@ -47,7 +47,7 @@ const menuItems = [
     icon: Users,
   },
   {
-    title: "得意先",
+    title: "発注元",
     url: "/customers",
     icon: Building2,
   },

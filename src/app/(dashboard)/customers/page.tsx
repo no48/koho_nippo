@@ -44,7 +44,7 @@ export default function CustomersPage() {
       setCustomers(data);
     } catch (error) {
       console.error(error);
-      toast.error("得意先の取得に失敗しました");
+      toast.error("発注元の取得に失敗しました");
     } finally {
       setLoading(false);
     }
@@ -64,7 +64,7 @@ export default function CustomersPage() {
 
       if (!response.ok) throw new Error("Failed to delete");
 
-      toast.success("得意先を削除しました");
+      toast.success("発注元を削除しました");
       fetchCustomers();
     } catch (error) {
       console.error(error);
@@ -78,8 +78,8 @@ export default function CustomersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">得意先一覧</h1>
-          <p className="text-muted-foreground">得意先を管理します</p>
+          <h1 className="text-3xl font-bold">発注元一覧</h1>
+          <p className="text-muted-foreground">発注元を管理します</p>
         </div>
         <Button asChild>
           <Link href="/customers/new">
@@ -93,14 +93,14 @@ export default function CustomersPage() {
         <div className="text-center py-8">読み込み中...</div>
       ) : customers.length === 0 ? (
         <div className="text-center py-8 text-muted-foreground">
-          得意先が登録されていません
+          発注元が登録されていません
         </div>
       ) : (
         <div className="border rounded-lg">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>得意先名</TableHead>
+                <TableHead>発注元名</TableHead>
                 <TableHead>住所</TableHead>
                 <TableHead>電話番号</TableHead>
                 <TableHead>担当者</TableHead>
@@ -140,7 +140,7 @@ export default function CustomersPage() {
       <Dialog open={deleteId !== null} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>得意先を削除しますか？</DialogTitle>
+            <DialogTitle>発注元を削除しますか？</DialogTitle>
             <DialogDescription>
               この操作は取り消せません。本当に削除しますか？
             </DialogDescription>

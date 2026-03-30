@@ -44,14 +44,14 @@ export default function EditCustomerPage({
   }
 
   if (!customer) {
-    return <div className="text-center py-8">得意先が見つかりません</div>;
+    return <div className="text-center py-8">発注元が見つかりません</div>;
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">得意先編集</h1>
-        <p className="text-muted-foreground">得意先情報を編集します</p>
+        <h1 className="text-3xl font-bold">発注元編集</h1>
+        <p className="text-muted-foreground">発注元情報を編集します</p>
       </div>
       <CustomerForm customer={customer} isEdit />
     </div>

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     if (!customerId) {
       return NextResponse.json(
-        { error: "得意先IDは必須です" },
+        { error: "発注元IDは必須です" },
         { status: 400 }
       );
     }
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const parsedCustomerId = safeParseInt(customerId);
     if (parsedCustomerId === null) {
       return NextResponse.json(
-        { error: "得意先IDは有効な数値を入力してください" },
+        { error: "発注元IDは有効な数値を入力してください" },
         { status: 400 }
       );
     }

@@ -23,7 +23,7 @@ export async function GET(
 
     if (!customer) {
       return NextResponse.json(
-        { error: "得意先が見つかりません" },
+        { error: "発注元が見つかりません" },
         { status: 404 }
       );
     }
@@ -32,7 +32,7 @@ export async function GET(
   } catch (error) {
     console.error("Failed to fetch customer:", error);
     return NextResponse.json(
-      { error: "得意先の取得に失敗しました" },
+      { error: "発注元の取得に失敗しました" },
       { status: 500 }
     );
   }
@@ -58,7 +58,7 @@ export async function PUT(
 
     if (!name) {
       return NextResponse.json(
-        { error: "得意先名は必須です" },
+        { error: "発注元名は必須です" },
         { status: 400 }
       );
     }
@@ -79,7 +79,7 @@ export async function PUT(
   } catch (error) {
     console.error("Failed to update customer:", error);
     return NextResponse.json(
-      { error: "得意先の更新に失敗しました" },
+      { error: "発注元の更新に失敗しました" },
       { status: 500 }
     );
   }
@@ -105,11 +105,11 @@ export async function DELETE(
       data: { isActive: false },
     });
 
-    return NextResponse.json({ message: "得意先を削除しました" });
+    return NextResponse.json({ message: "発注元を削除しました" });
   } catch (error) {
     console.error("Failed to delete customer:", error);
     return NextResponse.json(
-      { error: "得意先の削除に失敗しました" },
+      { error: "発注元の削除に失敗しました" },
       { status: 500 }
     );
   }

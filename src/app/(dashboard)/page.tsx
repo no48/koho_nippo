@@ -61,7 +61,7 @@ export default function DashboardPage() {
       href: "/employees",
     },
     {
-      title: "得意先",
+      title: "発注元",
       value: stats?.customerCount ?? "-",
       description: "登録件数",
       icon: Building2,

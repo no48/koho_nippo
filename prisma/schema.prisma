@@ -79,7 +79,7 @@ model TruckEmployee {
   @@map("truck_employee")
 }
 
-// 得意先
+// 発注元
 model Customer {
   id            Int       @id @default(autoincrement())
   name          String

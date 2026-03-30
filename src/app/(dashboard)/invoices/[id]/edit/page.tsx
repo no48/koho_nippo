@@ -183,7 +183,7 @@ export default function EditInvoicePage({
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>得意先</Label>
+                <Label>発注元</Label>
                 <Input value={invoice.customer.name} disabled />
               </div>
               <div className="space-y-2">

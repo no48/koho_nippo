@@ -214,7 +214,7 @@ function NewInvoicePageContent() {
     e.preventDefault();
 
     if (!customerId) {
-      toast.error("得意先を選択してください");
+      toast.error("発注元を選択してください");
       return;
     }
 
@@ -308,7 +308,7 @@ function NewInvoicePageContent() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="customerId">
-                  得意先 <span className="text-destructive">*</span>
+                  発注元 <span className="text-destructive">*</span>
                 </Label>
                 <CustomerAutocomplete
                   id="customerId"
@@ -317,7 +317,7 @@ function NewInvoicePageContent() {
                     setCustomerId(id);
                     setCustomerName(name);
                   }}
-                  placeholder="得意先名を入力"
+                  placeholder="発注元名を入力"
                   required
                 />
               </div>

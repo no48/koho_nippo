@@ -1,16 +1,16 @@
 import { test, expect } from "../fixtures/test-data.fixture";
 
-test.describe("得意先マスタ", () => {
+test.describe("発注元マスタ", () => {
   test("一覧ページが表示される", async ({ page }) => {
     await page.goto("/customers");
-    await expect(page.getByText("得意先一覧")).toBeVisible();
-    await expect(page.getByText("得意先を管理します")).toBeVisible();
+    await expect(page.getByText("発注元一覧")).toBeVisible();
+    await expect(page.getByText("発注元を管理します")).toBeVisible();
     await expect(
       page.getByRole("link", { name: "新規登録" })
     ).toBeVisible();
   });
 
-  test("新規得意先を登録・一覧表示・削除できる", async ({
+  test("新規発注元を登録・一覧表示・削除できる", async ({
     page,
     cleanup,
     testPrefix,
@@ -22,7 +22,7 @@ test.describe("得意先マスタ", () => {
     await expect(page.getByText("基本情報")).toBeVisible();
 
     // Fill form
-    await page.getByLabel("得意先名").fill(customerName);
+    await page.getByLabel("発注元名").fill(customerName);
     await page.getByLabel("住所").fill("テスト県テスト市1-2-3");
     await page.getByLabel("電話番号").fill("03-0000-0000");
     await page.getByLabel("担当者").fill("テスト担当");
@@ -42,7 +42,7 @@ test.describe("得意先マスタ", () => {
 
     // Confirm delete
     await expect(
-      page.getByText("得意先を削除しますか？")
+      page.getByText("発注元を削除しますか？")
     ).toBeVisible();
     await page.getByRole("button", { name: "削除" }).click();
 
@@ -50,7 +50,7 @@ test.describe("得意先マスタ", () => {
     await expect(page.getByText(customerName)).not.toBeVisible();
   });
 
-  test("得意先を編集できる", async ({ page, api, cleanup, testPrefix }) => {
+  test("発注元を編集できる", async ({ page, api, cleanup, testPrefix }) => {
     // Create via API
     const customer = await api.createCustomer({
       name: `${testPrefix}編集用株式会社`,

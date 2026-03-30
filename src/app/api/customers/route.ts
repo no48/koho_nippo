@@ -16,7 +16,7 @@ export async function GET() {
   } catch (error) {
     console.error("Failed to fetch customers:", error);
     return NextResponse.json(
-      { error: "得意先の取得に失敗しました" },
+      { error: "発注元の取得に失敗しました" },
       { status: 500 }
     );
   }
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
     if (!name) {
       return NextResponse.json(
-        { error: "得意先名は必須です" },
+        { error: "発注元名は必須です" },
         { status: 400 }
       );
     }
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Failed to create customer:", error);
     return NextResponse.json(
-      { error: "得意先の登録に失敗しました" },
+      { error: "発注元の登録に失敗しました" },
       { status: 500 }
     );
   }

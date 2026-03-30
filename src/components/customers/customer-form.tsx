@@ -55,7 +55,7 @@ export function CustomerForm({ customer, isEdit = false }: CustomerFormProps) {
         throw new Error(error.error || "エラーが発生しました");
       }
 
-      toast.success(isEdit ? "得意先を更新しました" : "得意先を登録しました");
+      toast.success(isEdit ? "発注元を更新しました" : "発注元を登録しました");
       router.push("/customers");
       router.refresh();
     } catch (error) {
@@ -75,7 +75,7 @@ export function CustomerForm({ customer, isEdit = false }: CustomerFormProps) {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">
-              得意先名 <span className="text-destructive">*</span>
+              発注元名 <span className="text-destructive">*</span>
             </Label>
             <Input
               id="name"

@@ -5,13 +5,13 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Creating sample invoices...");
 
-  // 得意先ごとに未請求の日報を取得して請求書を作成
+  // 発注元ごとに未請求の日報を取得して請求書を作成
   const customers = await prisma.customer.findMany();
 
   let invoiceCount = 0;
 
   for (const customer of customers) {
-    // この得意先の未請求日報を取得（古い順）
+    // この発注元の未請求日報を取得（古い順）
     const unbilledReports = await prisma.dailyReport.findMany({
       where: {
         customerId: customer.id,

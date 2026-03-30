@@ -28,12 +28,12 @@ test.describe("日報フィルタ・月ナビゲーション", () => {
     await expect(employeeFilter).toBeVisible({ timeout: 10000 });
   });
 
-  test("得意先フィルタで絞り込みできる", async ({ page }) => {
+  test("発注元フィルタで絞り込みできる", async ({ page }) => {
     await page.goto("/reports");
 
     // The customer filter trigger should exist
     const customerFilter = page.locator("button[role='combobox']").filter({
-      hasText: /得意先で絞り込み|すべての得意先/,
+      hasText: /発注元で絞り込み|すべての発注元/,
     });
     await expect(customerFilter).toBeVisible({ timeout: 10000 });
   });

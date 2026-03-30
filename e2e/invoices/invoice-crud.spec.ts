@@ -18,7 +18,7 @@ test.describe("請求書CRUD", () => {
   }) => {
     // Create customer for the invoice
     const customer = await api.createCustomer({
-      name: `${testPrefix}請求書テスト得意先`,
+      name: `${testPrefix}請求書テスト発注元`,
     });
     cleanup.track("customer", customer.id);
 
@@ -32,7 +32,7 @@ test.describe("請求書CRUD", () => {
     // Select customer via autocomplete
     const customerInput = page.locator("#customerId");
     await customerInput.fill(`${testPrefix}請求書テスト`);
-    await page.getByText(`${testPrefix}請求書テスト得意先`).click();
+    await page.getByText(`${testPrefix}請求書テスト発注元`).click();
 
     // Wait for manual items section to appear
     await expect(page.getByText("手動明細入力")).toBeVisible();
@@ -64,7 +64,7 @@ test.describe("請求書CRUD", () => {
 
     // Find and clean up the created invoice
     const row = page.locator("tr", {
-      hasText: `${testPrefix}請求書テスト得意先`,
+      hasText: `${testPrefix}請求書テスト発注元`,
     });
     await expect(row).toBeVisible();
 
@@ -76,7 +76,7 @@ test.describe("請求書CRUD", () => {
 
   test("請求書詳細ページを表示できる", async ({ page, api, cleanup, testPrefix }) => {
     const customer = await api.createCustomer({
-      name: `${testPrefix}詳細テスト得意先`,
+      name: `${testPrefix}詳細テスト発注元`,
     });
     cleanup.track("customer", customer.id);
 
@@ -100,7 +100,7 @@ test.describe("請求書CRUD", () => {
     await expect(page.getByText("請求明細書")).toBeVisible();
 
     // Check customer name appears
-    await expect(page.getByText(`${testPrefix}詳細テスト得意先`)).toBeVisible();
+    await expect(page.getByText(`${testPrefix}詳細テスト発注元`)).toBeVisible();
 
     // Check draft badge
     await expect(page.getByText("下書き")).toBeVisible();
@@ -114,7 +114,7 @@ test.describe("請求書CRUD", () => {
 
   test("下書き請求書を発行できる", async ({ page, api, cleanup, testPrefix }) => {
     const customer = await api.createCustomer({
-      name: `${testPrefix}発行テスト得意先`,
+      name: `${testPrefix}発行テスト発注元`,
     });
     cleanup.track("customer", customer.id);
 

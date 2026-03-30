@@ -9,7 +9,7 @@ test.describe("請求書→日報作成フロー", () => {
   }) => {
     // Prepare test data
     const customer = await api.createCustomer({
-      name: `${testPrefix}逆フロー得意先`,
+      name: `${testPrefix}逆フロー発注元`,
     });
     cleanup.track("customer", customer.id);
 
@@ -56,7 +56,7 @@ test.describe("請求書→日報作成フロー", () => {
     // Verify auto-filled data is shown
     await expect(page.getByText("自動入力（請求書から取得）")).toBeVisible();
     await expect(
-      page.getByText(`${testPrefix}逆フロー得意先`)
+      page.getByText(`${testPrefix}逆フロー発注元`)
     ).toBeVisible();
 
     // Fill required fields in modal
@@ -105,7 +105,7 @@ test.describe("請求書→日報作成フロー", () => {
   }) => {
     // Create test data
     const customer = await api.createCustomer({
-      name: `${testPrefix}通行料テスト得意先`,
+      name: `${testPrefix}通行料テスト発注元`,
     });
     cleanup.track("customer", customer.id);
 

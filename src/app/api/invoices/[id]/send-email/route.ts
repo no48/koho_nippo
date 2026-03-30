@@ -43,7 +43,7 @@ export async function POST(
     // Check if customer has email
     if (!invoice.customer.email) {
       return NextResponse.json(
-        { error: "得意先のメールアドレスが登録されていません" },
+        { error: "発注元のメールアドレスが登録されていません" },
         { status: 400 }
       );
     }

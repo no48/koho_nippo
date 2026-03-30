@@ -344,7 +344,7 @@ export default function InvoiceDetailPage({
 
   const handleSendEmail = async () => {
     if (!invoice?.customer.email) {
-      toast.error("得意先のメールアドレスが登録されていません");
+      toast.error("発注元のメールアドレスが登録されていません");
       return;
     }
 
@@ -451,7 +451,7 @@ export default function InvoiceDetailPage({
             variant="outline"
             onClick={handleSendEmail}
             disabled={sendingEmail || !invoice?.customer.email}
-            title={!invoice?.customer.email ? "得意先のメールアドレスが未登録です" : ""}
+            title={!invoice?.customer.email ? "発注元のメールアドレスが未登録です" : ""}
           >
             <Mail className="mr-2 h-4 w-4" />
             {sendingEmail ? "送信中..." : "メール送信"}
@@ -697,7 +697,7 @@ export default function InvoiceDetailPage({
                     <span className="ml-2">{formatDate(selectedItem.itemDate)}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">得意先:</span>
+                    <span className="text-muted-foreground">発注元:</span>
                     <span className="ml-2">{invoice?.customer.name}</span>
                   </div>
                   <div>

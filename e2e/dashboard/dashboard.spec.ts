@@ -16,7 +16,7 @@ test.describe("ダッシュボード", () => {
     // Wait for stats to load
     await expect(page.getByText("トラック")).toBeVisible({ timeout: 10000 });
     await expect(page.getByText("従業員")).toBeVisible();
-    await expect(page.getByText("得意先")).toBeVisible();
+    await expect(page.getByText("発注元")).toBeVisible();
     await expect(page.getByText("今月の日報")).toBeVisible();
 
     // Check the stat labels

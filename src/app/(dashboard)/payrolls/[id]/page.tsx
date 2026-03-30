@@ -353,7 +353,7 @@ export default function PayrollDetailPage({
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-16">日付</TableHead>
-                        <TableHead>得意先</TableHead>
+                        <TableHead>発注元</TableHead>
                         <TableHead>発地/納品先</TableHead>
                         <TableHead className="w-20">給与形態</TableHead>
                         <TableHead>作業内容</TableHead>

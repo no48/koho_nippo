@@ -126,7 +126,7 @@ export default function InvoicesPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>請求書番号</TableHead>
-                <TableHead>得意先</TableHead>
+                <TableHead>発注元</TableHead>
                 <TableHead>発行日</TableHead>
                 <TableHead className="text-right">合計金額</TableHead>
                 <TableHead>ステータス</TableHead>

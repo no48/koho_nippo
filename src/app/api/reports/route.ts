@@ -116,7 +116,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "従業員IDは有効な数値を入力してください" }, { status: 400 });
     }
     if (parsedCustomerId === null) {
-      return NextResponse.json({ error: "得意先IDは有効な数値を入力してください" }, { status: 400 });
+      return NextResponse.json({ error: "発注元IDは有効な数値を入力してください" }, { status: 400 });
     }
     if (parsedFare === null) {
       return NextResponse.json({ error: "運賃は有効な数値を入力してください" }, { status: 400 });

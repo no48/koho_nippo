@@ -14,7 +14,7 @@
 3. [ダッシュボード (Dashboard)](#2-ダッシュボード-dashboard)
 4. [車両マスタ (Trucks)](#3-車両マスタ-trucks)
 5. [従業員マスタ (Employees)](#4-従業員マスタ-employees)
-6. [得意先マスタ (Customers)](#5-得意先マスタ-customers)
+6. [発注元マスタ (Customers)](#5-発注元マスタ-customers)
 7. [日報 (Daily Reports)](#6-日報-daily-reports)
 8. [請求書 (Invoices)](#7-請求書-invoices)
 9. [給与 (Payrolls)](#8-給与-payrolls)
@@ -31,7 +31,7 @@
 
 本システムは運送業向けの基幹業務システムであり、以下の業務を管理する。
 
-- 車両・従業員・得意先のマスタ管理
+- 車両・従業員・発注元のマスタ管理
 - 日報（運送実績）の記録・管理
 - 請求書の作成・PDF生成・メール送信
 - 給与明細の管理（25日締め）
@@ -126,7 +126,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 {
   "truckCount": "number (有効な車両数)",
   "employeeCount": "number (有効な従業員数)",
-  "customerCount": "number (有効な得意先数)",
+  "customerCount": "number (有効な発注元数)",
   "monthlyReportCount": "number (当月の日報件数)",
   "recentReports": [
     {
@@ -149,16 +149,16 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 #### ビジネスロジック
 
-- 車両・従業員・得意先はそれぞれ `isActive: true` の件数のみカウント
+- 車両・従業員・発注元はそれぞれ `isActive: true` の件数のみカウント
 - 当月の日報件数は**25日締めの給与計算期間**で集計する（例: 1月15日時点の場合、12/26から1/25の期間）
 - `getCurrentPayrollPeriod()` を使用して期間を動的に計算
-- 最新5件の日報を従業員名・得意先名付きで取得
+- 最新5件の日報を従業員名・発注元名付きで取得
 
 #### 関連エンドポイント
 
 - `/api/trucks` (車両数の詳細)
 - `/api/employees` (従業員数の詳細)
-- `/api/customers` (得意先数の詳細)
+- `/api/customers` (発注元数の詳細)
 - `/api/reports` (日報の詳細)
 
 ---
@@ -511,11 +511,11 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 ---
 
-## 5. 得意先マスタ (Customers)
+## 5. 発注元マスタ (Customers)
 
 ### GET /api/customers
 
-有効な得意先一覧を取得する。
+有効な発注元一覧を取得する。
 
 **認証要否**: 必須 (requireAuth)
 
@@ -544,14 +544,14 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 #### ビジネスロジック
 
-- `isActive: true` の得意先のみ取得
+- `isActive: true` の発注元のみ取得
 - 名前の昇順でソート
 
 ---
 
 ### POST /api/customers
 
-新規得意先を登録する。
+新規発注元を登録する。
 
 **認証要否**: 必須 (requireAuth)
 
@@ -559,7 +559,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 | フィールド | 型 | 必須/任意 | 説明 |
 |---|---|:---:|---|
-| name | string | 必須 | 得意先名 |
+| name | string | 必須 | 発注元名 |
 | address | string | 任意 | 住所 |
 | phone | string | 任意 | 電話番号 |
 | email | string | 任意 | 請求書送付先メールアドレス |
@@ -568,7 +568,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 #### レスポンス (201 Created)
 
-作成された得意先オブジェクト
+作成された発注元オブジェクト
 
 #### ステータスコード
 
@@ -583,7 +583,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 ### GET /api/customers/[id]
 
-指定IDの得意先詳細を取得する。
+指定IDの発注元詳細を取得する。
 
 **認証要否**: 必須 (requireAuth)
 
@@ -591,11 +591,11 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 | パラメータ | 型 | 説明 |
 |---|---|---|
-| id | number | 得意先ID |
+| id | number | 発注元ID |
 
 #### レスポンス (200 OK)
 
-得意先オブジェクト
+発注元オブジェクト
 
 #### ステータスコード
 
@@ -603,7 +603,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 |:---:|---|
 | 200 | 取得成功 |
 | 400 | IDが無効な値 |
-| 404 | 得意先が見つからない |
+| 404 | 発注元が見つからない |
 | 401 | 未認証 |
 | 500 | サーバーエラー |
 
@@ -611,7 +611,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 ### PUT /api/customers/[id]
 
-指定IDの得意先を更新する。
+指定IDの発注元を更新する。
 
 **認証要否**: 必須 (requireAuth)
 
@@ -619,13 +619,13 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 | パラメータ | 型 | 説明 |
 |---|---|---|
-| id | number | 得意先ID |
+| id | number | 発注元ID |
 
 #### リクエストボディ (JSON)
 
 | フィールド | 型 | 必須/任意 | 説明 |
 |---|---|:---:|---|
-| name | string | 必須 | 得意先名 |
+| name | string | 必須 | 発注元名 |
 | address | string | 任意 | 住所 |
 | phone | string | 任意 | 電話番号 |
 | email | string | 任意 | メールアドレス |
@@ -634,13 +634,13 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 #### レスポンス (200 OK)
 
-更新された得意先オブジェクト
+更新された発注元オブジェクト
 
 ---
 
 ### DELETE /api/customers/[id]
 
-指定IDの得意先を論理削除する。
+指定IDの発注元を論理削除する。
 
 **認証要否**: 必須 (requireAuth)
 
@@ -652,7 +652,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 
 ```json
 {
-  "message": "得意先を削除しました"
+  "message": "発注元を削除しました"
 }
 ```
 
@@ -675,7 +675,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 | startDate | string (ISO 8601) | 任意 | 開始日（year/monthが指定されていない場合に使用） |
 | endDate | string (ISO 8601) | 任意 | 終了日（year/monthが指定されていない場合に使用） |
 | employeeId | number | 任意 | 従業員ID |
-| customerId | number | 任意 | 得意先ID |
+| customerId | number | 任意 | 発注元ID |
 
 #### ビジネスロジック
 
@@ -746,7 +746,7 @@ NextAuth.jsが提供する認証エンドポイント群。Credentials Provider�
 | reportType | string | 任意 | 日報種類（集計, チャーター等） |
 | employeeId | number | 必須 | 従業員ID |
 | truckId | number | 必須 | 車両ID |
-| customerId | number | 必須 | 得意先ID |
+| customerId | number | 必須 | 発注元ID |
 | origin | string | 必須 | 発地 |
 | destination | string | 必須 | 納品先 |
 | productName | string | 任意 | 品名 |
@@ -845,7 +845,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 
 #### ビジネスロジック
 
-- **物理削除**（車両・従業員・得意先の論理削除とは異なる点に注意）
+- **物理削除**（車両・従業員・発注元の論理削除とは異なる点に注意）
 
 #### レスポンス (200 OK)
 
@@ -889,7 +889,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 
 ### GET /api/reports/unbilled
 
-指定得意先の未請求日報一覧を取得する。
+指定発注元の未請求日報一覧を取得する。
 
 **認証要否**: 必須 (requireAuth)
 
@@ -897,7 +897,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 
 | パラメータ | 型 | 必須/任意 | 説明 |
 |---|---|:---:|---|
-| customerId | number | 必須 | 得意先ID |
+| customerId | number | 必須 | 発注元ID |
 
 #### ビジネスロジック
 
@@ -1088,7 +1088,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 
 | パラメータ | 型 | 必須/任意 | 説明 |
 |---|---|:---:|---|
-| customerId | number | 任意 | 得意先ID |
+| customerId | number | 任意 | 発注元ID |
 | status | string | 任意 | ステータス（"draft" または "issued"） |
 
 #### レスポンス (200 OK)
@@ -1143,7 +1143,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 
 | フィールド | 型 | 必須/任意 | 説明 |
 |---|---|:---:|---|
-| customerId | number | 必須 | 得意先ID |
+| customerId | number | 必須 | 発注元ID |
 | issueDate | string (ISO 8601) | 必須 | 発行日 |
 | items | array | 必須 | 明細の配列（1件以上必須） |
 
@@ -1349,7 +1349,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 - NotoSansJPフォントを使用（Google Fontsから動的に読み込み）
 - PDF内容:
   - ヘッダー: 請求書番号、「請求明細書」タイトル、発行日
-  - 得意先情報: 住所、名称（「御中」付き）
+  - 発注元情報: 住所、名称（「御中」付き）
   - 会社情報: 会社名、住所、電話番号、FAX、振込口座情報
   - サマリーテーブル: 当月売上額、通行料合計、消費税額、当月分請求額
   - インボイス登録番号
@@ -1397,12 +1397,12 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 
 #### ビジネスロジック
 
-- 得意先のemailフィールドが登録されていることが前提条件
+- 発注元のemailフィールドが登録されていることが前提条件
 - PDFを動的に生成し、メールに添付して送信
 - SMTP設定はSettingsテーブル（またはフォールバックとして環境変数 GMAIL_USER, GMAIL_APP_PASSWORD）から取得
 - メール内容:
   - 件名: `【請求書】{invoiceNumber} - {年}年{月}月分`
-  - 本文（HTML）: 得意先名、請求書番号、発行日、請求金額を含む定型文
+  - 本文（HTML）: 発注元名、請求書番号、発行日、請求金額を含む定型文
   - 添付ファイル: `請求書_{invoiceNumber}.pdf`
 - nodemailerを使用してSMTP送信
 
@@ -1419,7 +1419,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 | コード | 条件 |
 |:---:|---|
 | 200 | 送信成功 |
-| 400 | IDが無効な値、または得意先のメールアドレスが未登録 |
+| 400 | IDが無効な値、または発注元のメールアドレスが未登録 |
 | 404 | 請求書が見つからない |
 | 401 | 未認証 |
 | 500 | メール送信失敗（SMTP設定不備含む） |
@@ -2304,8 +2304,8 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 | Truck -> DailyReport | dailyReports | 1:N | 車両ごとの日報 |
 | Employee -> DailyReport | dailyReports | 1:N | 従業員ごとの日報 |
 | Employee -> Payroll | payrolls | 1:N | 従業員ごとの給与明細 |
-| Customer -> DailyReport | dailyReports | 1:N | 得意先ごとの日報 |
-| Customer -> Invoice | invoices | 1:N | 得意先ごとの請求書 |
+| Customer -> DailyReport | dailyReports | 1:N | 発注元ごとの日報 |
+| Customer -> Invoice | invoices | 1:N | 発注元ごとの請求書 |
 | Invoice -> InvoiceItem | items | 1:N | 請求書の明細（Cascade） |
 | DailyReport <-> InvoiceItem | dailyReportId | 1:1 | 日報から請求書フロー |
 | DailyReport -> InvoiceItem | invoiceItemId | N:1 | 請求書から日報フロー |
@@ -2420,7 +2420,7 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 - ページサイズ: A4 横向き（landscape）
 - PDF構成:
   - ヘッダー（請求書番号、タイトル、発行日）
-  - 得意先情報（住所、名称）
+  - 発注元情報（住所、名称）
   - 会社情報（会社名、住所、電話、FAX、振込口座）
   - サマリーテーブル（売上額、通行料、消費税、請求額）
   - インボイス登録番号
@@ -2445,11 +2445,11 @@ POST と同じフィールド（invoiceItemId を除く）。全て同じバリ�
 | 従業員 | GET | `/api/employees/[id]` | 従業員詳細取得 |
 | 従業員 | PUT | `/api/employees/[id]` | 従業員更新 |
 | 従業員 | DELETE | `/api/employees/[id]` | 従業員削除（論理） |
-| 得意先 | GET | `/api/customers` | 得意先一覧取得 |
-| 得意先 | POST | `/api/customers` | 得意先登録 |
-| 得意先 | GET | `/api/customers/[id]` | 得意先詳細取得 |
-| 得意先 | PUT | `/api/customers/[id]` | 得意先更新 |
-| 得意先 | DELETE | `/api/customers/[id]` | 得意先削除（論理） |
+| 発注元 | GET | `/api/customers` | 発注元一覧取得 |
+| 発注元 | POST | `/api/customers` | 発注元登録 |
+| 発注元 | GET | `/api/customers/[id]` | 発注元詳細取得 |
+| 発注元 | PUT | `/api/customers/[id]` | 発注元更新 |
+| 発注元 | DELETE | `/api/customers/[id]` | 発注元削除（論理） |
 | 日報 | GET | `/api/reports` | 日報一覧取得 |
 | 日報 | POST | `/api/reports` | 日報登録 |
 | 日報 | GET | `/api/reports/[id]` | 日報詳細取得 |
