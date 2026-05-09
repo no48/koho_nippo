@@ -56,7 +56,7 @@ type DailyReport = {
   customer: Customer;
   origin: string;
   destination: string;
-  fare: string | number;
+  fare: string | number | null;
   memo: string | null;
 };
 
@@ -233,6 +233,7 @@ export default function ReportsPage() {
 
   // Calculate totals
   const totalFare = reports.reduce((sum, r) => {
+    if (r.fare == null) return sum;
     const fare = typeof r.fare === "string" ? parseInt(r.fare) : r.fare;
     return sum + fare;
   }, 0);
@@ -408,7 +409,7 @@ export default function ReportsPage() {
                     <TableCell>{report.origin}</TableCell>
                     <TableCell>{report.destination}</TableCell>
                     <TableCell className="text-right">
-                      ¥{formatCurrency(report.fare)}
+                      {report.fare == null ? "-" : `¥${formatCurrency(report.fare)}`}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
