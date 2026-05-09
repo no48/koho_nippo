@@ -99,7 +99,7 @@ export async function POST(request: Request) {
       invoiceItemId,  // 請求書→日報フロー用
     } = body;
 
-    if (!reportDate || !employeeId || !customerId || !origin || !destination || fare === undefined) {
+    if (!reportDate || !employeeId || !customerId || !origin || !destination) {
       return NextResponse.json(
         { error: "必須項目を入力してください" },
         { status: 400 }
@@ -110,7 +110,10 @@ export async function POST(request: Request) {
     const parsedEmployeeId = safeParseInt(employeeId);
     const parsedTruckId = safeParseInt(truckId);
     const parsedCustomerId = safeParseInt(customerId);
-    const parsedFare = safeParseInt(fare);
+    const parsedFare =
+      fare === "" || fare === null || fare === undefined
+        ? null
+        : safeParseInt(fare);
 
     if (parsedEmployeeId === null) {
       return NextResponse.json({ error: "従業員IDは有効な数値を入力してください" }, { status: 400 });
@@ -118,7 +121,8 @@ export async function POST(request: Request) {
     if (parsedCustomerId === null) {
       return NextResponse.json({ error: "発注元IDは有効な数値を入力してください" }, { status: 400 });
     }
-    if (parsedFare === null) {
+    // 運賃が入力されている場合のみ数値チェック
+    if (fare !== "" && fare !== null && fare !== undefined && parsedFare === null) {
       return NextResponse.json({ error: "運賃は有効な数値を入力してください" }, { status: 400 });
     }
 
