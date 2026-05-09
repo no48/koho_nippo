@@ -494,7 +494,7 @@ export function ReportForm({ report, isEdit = false }: ReportFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="fare">
-                運賃（税抜） <span className="text-destructive">*</span>
+                運賃（税抜）
               </Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">¥</span>
@@ -507,7 +507,6 @@ export function ReportForm({ report, isEdit = false }: ReportFormProps) {
                   }
                   placeholder="50000"
                   className="pl-8"
-                  required
                 />
               </div>
             </div>

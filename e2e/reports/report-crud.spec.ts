@@ -44,8 +44,9 @@ test.describe("日報CRUD", () => {
     await page.locator("button[role='combobox']").filter({ hasText: "従業員を選択" }).click();
     await page.getByRole("option", { name: `${testPrefix}日報用太郎` }).click();
 
-    // Select truck
-    await page.locator("button[role='combobox']").filter({ hasText: "トラックを選択" }).click();
+    // Select truck (shows "（未選択）" as default since optional field uses _none sentinel)
+    // Use the second combobox with "（未選択）" — first is the employee already selected, third is 給与形態
+    await page.locator("button[role='combobox']").filter({ hasText: "（未選択）" }).first().click();
     await page.getByRole("option", { name: new RegExp(`${testPrefix}日報用トラック`) }).click();
 
     // Fill origin and destination
@@ -114,5 +115,45 @@ test.describe("日報CRUD", () => {
     await page.getByRole("button", { name: "削除" }).click();
 
     await expect(page.getByText(`${testPrefix}API発地`)).not.toBeVisible();
+  });
+
+  test("運賃を空欄のまま日報を登録できる", async ({ page, api, cleanup, testPrefix }) => {
+    const employee = await api.createEmployee({
+      name: `${testPrefix}運賃なし太郎`,
+      nameKana: `${testPrefix}ウンチンナシタロウ`,
+    });
+    cleanup.track("employee", employee.id);
+
+    const customer = await api.createCustomer({
+      name: `${testPrefix}運賃なし発注元`,
+    });
+    cleanup.track("customer", customer.id);
+
+    await page.goto("/reports/new");
+
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(Math.min(today.getDate(), 25)).padStart(2, "0")}`;
+    await page.getByLabel("日付").fill(dateStr);
+
+    const customerInput = page.locator("#customerId");
+    await customerInput.fill(`${testPrefix}運賃なし`);
+    await page.locator("li", { hasText: `${testPrefix}運賃なし発注元` }).click();
+
+    await page.locator("button[role='combobox']").filter({ hasText: "従業員を選択" }).click();
+    await page.getByRole("option", { name: `${testPrefix}運賃なし太郎` }).click();
+
+    await page.getByLabel("発地").fill("テスト発地");
+    await page.getByLabel("納品先").fill("テスト納品先");
+
+    // Fare is intentionally left empty
+    await page.getByRole("button", { name: "登録" }).click();
+
+    await expect(page).toHaveURL(/\/reports$/);
+
+    // Find created report and clean up
+    const reports = await api.listReportsByEmployee(employee.id);
+    const created = reports[0];
+    if (created) cleanup.track("report", created.id);
+    expect(created.fare).toBeNull();
   });
 });

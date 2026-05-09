@@ -110,6 +110,11 @@ export class ApiHelper {
       throw new Error(`Failed to delete report: ${res.status()}`);
   }
 
+  async listReportsByEmployee(employeeId: number) {
+    const res = await this.request.get(`${BASE_URL}/api/reports?employeeId=${employeeId}`);
+    return await res.json() as Array<{ id: number; fare: string | null }>;
+  }
+
   // ─── Invoices ────────────────────────────────────────
 
   async createInvoice(data: {
