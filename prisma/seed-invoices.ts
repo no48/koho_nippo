@@ -57,7 +57,7 @@ async function main() {
               dailyReportId: r.id,
               itemDate: r.reportDate,
               description: `${reportDate.getMonth() + 1}/${reportDate.getDate()} ${r.origin} → ${r.destination}`,
-              amount: r.fare,
+              amount: r.fare ?? 0,
             };
           }),
         },
