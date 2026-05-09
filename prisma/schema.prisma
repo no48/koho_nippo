@@ -85,7 +85,9 @@ model Customer {
   name          String
   address       String?
   phone         String?
+  fax           String?
   email         String?   // 請求書送付先メールアドレス
+  closingDay    String?   @map("closing_day")  // 締め日: "1"〜"31" または "末"
   contactPerson String?   @map("contact_person")
   memo          String?
   isActive      Boolean   @default(true) @map("is_active")
