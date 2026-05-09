@@ -58,7 +58,7 @@ test.describe("発注元マスタ", () => {
     await page.getByLabel("FAX番号").fill("03-9999-8888");
 
     // Open closing-day select and pick 月末
-    await page.locator("button[role='combobox']").filter({ hasText: "選択してください" }).click();
+    await page.locator("button[role='combobox']").filter({ hasText: "（未設定）" }).click();
     await page.getByRole("option", { name: "月末" }).click();
 
     await page.getByRole("button", { name: "登録" }).click();

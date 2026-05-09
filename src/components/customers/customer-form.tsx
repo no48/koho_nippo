@@ -151,11 +151,11 @@ export function CustomerForm({ customer, isEdit = false }: CustomerFormProps) {
             <div className="space-y-2">
               <Label htmlFor="closingDay">締め日</Label>
               <Select
-                value={formData.closingDay || undefined}
+                value={formData.closingDay || "_none"}
                 onValueChange={(value) =>
                   setFormData({
                     ...formData,
-                    closingDay: value,
+                    closingDay: value === "_none" ? "" : value,
                   })
                 }
               >
@@ -163,6 +163,7 @@ export function CustomerForm({ customer, isEdit = false }: CustomerFormProps) {
                   <SelectValue placeholder="選択してください" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="_none">（未設定）</SelectItem>
                   {Array.from({ length: 31 }, (_, i) => String(i + 1)).map((d) => (
                     <SelectItem key={d} value={d}>
                       {d}日
