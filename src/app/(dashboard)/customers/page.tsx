@@ -27,8 +27,10 @@ type Customer = {
   name: string;
   address: string | null;
   phone: string | null;
+  fax: string | null;
   contactPerson: string | null;
   memo: string | null;
+  closingDay: string | null;
 };
 
 export default function CustomersPage() {
@@ -53,6 +55,12 @@ export default function CustomersPage() {
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  const formatClosingDay = (cd: string | null) => {
+    if (!cd) return "-";
+    if (cd === "末") return "月末";
+    return `${cd}日`;
+  };
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -104,6 +112,7 @@ export default function CustomersPage() {
                 <TableHead>住所</TableHead>
                 <TableHead>電話番号</TableHead>
                 <TableHead>担当者</TableHead>
+                <TableHead>締め日</TableHead>
                 <TableHead className="w-[100px]">操作</TableHead>
               </TableRow>
             </TableHeader>
@@ -114,6 +123,7 @@ export default function CustomersPage() {
                   <TableCell>{customer.address || "-"}</TableCell>
                   <TableCell>{customer.phone || "-"}</TableCell>
                   <TableCell>{customer.contactPerson || "-"}</TableCell>
+                  <TableCell>{formatClosingDay(customer.closingDay)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button variant="ghost" size="icon" asChild>
