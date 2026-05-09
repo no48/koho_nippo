@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { name, address, phone, email, contactPerson, memo } = body;
+    const { name, address, phone, fax, email, closingDay, contactPerson, memo } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -43,7 +43,9 @@ export async function POST(request: Request) {
         name,
         address: address || null,
         phone: phone || null,
+        fax: fax || null,
         email: email || null,
+        closingDay: closingDay || null,
         contactPerson: contactPerson || null,
         memo: memo || null,
       },
