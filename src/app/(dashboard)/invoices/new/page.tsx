@@ -24,7 +24,7 @@ type DailyReport = {
   reportDate: string;
   origin: string;
   destination: string;
-  fare: string | number;
+  fare: string | number | null;
   workItems: string | null;
   employee: { name: string };
   customer: { id: number; name: string };
@@ -189,6 +189,7 @@ function NewInvoicePageContent() {
 
   // 日報からの小計
   const reportSubtotal = selectedReports.reduce((sum, r) => {
+    if (r.fare == null) return sum;
     const fare = typeof r.fare === "string" ? parseInt(r.fare) : r.fare;
     return sum + fare;
   }, 0);
@@ -241,7 +242,12 @@ function NewInvoicePageContent() {
           dailyReportId: r.id,
           itemDate: r.reportDate,
           description: `${formatDate(r.reportDate)} ${r.origin} → ${r.destination}${workItemsStr ? ` [${workItemsStr}]` : ""}`,
-          amount: typeof r.fare === "string" ? parseInt(r.fare) : r.fare,
+          amount:
+            r.fare == null
+              ? 0
+              : typeof r.fare === "string"
+                ? parseInt(r.fare)
+                : r.fare,
         };
       });
 
@@ -383,7 +389,9 @@ function NewInvoicePageContent() {
                               {parseWorkItems(report.workItems) || "-"}
                             </TableCell>
                             <TableCell className="text-right">
-                              ¥{formatCurrency(report.fare)}
+                              {report.fare == null
+                                ? <span className="text-muted-foreground italic">金額未確定</span>
+                                : <>¥{formatCurrency(report.fare)}</>}
                             </TableCell>
                           </TableRow>
                         ))}
