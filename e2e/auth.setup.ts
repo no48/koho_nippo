@@ -8,7 +8,7 @@ setup("authenticate", async ({ page }) => {
 
   // Wait for redirect to dashboard
   await expect(page).toHaveURL("/", { timeout: 15000 });
-  await expect(page.getByText("ダッシュボード")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "ダッシュボード" })).toBeVisible();
 
   await page.context().storageState({ path: ".auth/user.json" });
 });

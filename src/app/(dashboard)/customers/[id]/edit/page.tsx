@@ -8,7 +8,9 @@ type Customer = {
   name: string;
   address: string | null;
   phone: string | null;
+  fax: string | null;
   email: string | null;
+  closingDay: string | null;
   contactPerson: string | null;
   memo: string | null;
 };

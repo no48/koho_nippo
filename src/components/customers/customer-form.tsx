@@ -8,13 +8,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Customer = {
   id: number;
   name: string;
   address: string | null;
   phone: string | null;
+  fax: string | null;
   email: string | null;
+  closingDay: string | null;
   contactPerson: string | null;
   memo: string | null;
 };
@@ -31,7 +40,9 @@ export function CustomerForm({ customer, isEdit = false }: CustomerFormProps) {
     name: customer?.name || "",
     address: customer?.address || "",
     phone: customer?.phone || "",
+    fax: customer?.fax || "",
     email: customer?.email || "",
+    closingDay: customer?.closingDay || "",
     contactPerson: customer?.contactPerson || "",
     memo: customer?.memo || "",
   });
@@ -122,6 +133,44 @@ export function CustomerForm({ customer, isEdit = false }: CustomerFormProps) {
                 }
                 placeholder="例: 山田 太郎"
               />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="fax">FAX番号</Label>
+              <Input
+                id="fax"
+                value={formData.fax}
+                onChange={(e) =>
+                  setFormData({ ...formData, fax: e.target.value })
+                }
+                placeholder="例: 03-1234-5678"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="closingDay">締め日</Label>
+              <Select
+                value={formData.closingDay || undefined}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    closingDay: value,
+                  })
+                }
+              >
+                <SelectTrigger id="closingDay">
+                  <SelectValue placeholder="選択してください" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 31 }, (_, i) => String(i + 1)).map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}日
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="末">月末</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

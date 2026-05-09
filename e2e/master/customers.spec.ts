@@ -50,6 +50,35 @@ test.describe("発注元マスタ", () => {
     await expect(page.getByText(customerName)).not.toBeVisible();
   });
 
+  test("FAXと締め日を含めて発注元を登録できる", async ({ page, api, cleanup, testPrefix }) => {
+    const customerName = `${testPrefix}締め日テスト商事`;
+
+    await page.goto("/customers/new");
+    await page.getByLabel("発注元名").fill(customerName);
+    await page.getByLabel("FAX番号").fill("03-9999-8888");
+
+    // Open closing-day select and pick 月末
+    await page.locator("button[role='combobox']").filter({ hasText: "選択してください" }).click();
+    await page.getByRole("option", { name: "月末" }).click();
+
+    await page.getByRole("button", { name: "登録" }).click();
+
+    // Wait for redirect to customers list
+    await expect(page).toHaveURL("/customers", { timeout: 10000 });
+
+    // Find created customer and clean up
+    await expect(page.getByText(customerName)).toBeVisible();
+    const created = await api.findCustomerByName(customerName);
+    if (created) cleanup.track("customer", created.id);
+
+    // Verify the value persisted via edit page
+    await page.goto(`/customers/${created!.id}/edit`);
+    await expect(page.getByLabel("FAX番号")).toHaveValue("03-9999-8888");
+    await expect(
+      page.locator("button[role='combobox']").filter({ hasText: "月末" })
+    ).toBeVisible();
+  });
+
   test("発注元を編集できる", async ({ page, api, cleanup, testPrefix }) => {
     // Create via API
     const customer = await api.createCustomer({

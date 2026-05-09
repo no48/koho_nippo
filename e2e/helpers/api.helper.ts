@@ -77,6 +77,12 @@ export class ApiHelper {
       throw new Error(`Failed to delete customer: ${res.status()}`);
   }
 
+  async findCustomerByName(name: string) {
+    const res = await this.request.get(`${BASE_URL}/api/customers`);
+    const list = await res.json() as Array<{ id: number; name: string }>;
+    return list.find((c) => c.name === name) || null;
+  }
+
   // ─── Daily Reports ──────────────────────────────────
 
   async createReport(data: {
