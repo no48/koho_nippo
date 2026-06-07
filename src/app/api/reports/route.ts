@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth, safeParseInt } from "@/lib/api-auth";
 import { getPayrollPeriod } from "@/lib/payroll-period";
+import { generateReportNumber } from "@/lib/report-number";
 
 // GET /api/reports
 export async function GET(request: NextRequest) {
@@ -128,25 +129,7 @@ export async function POST(request: Request) {
 
     // Use transaction to prevent race condition on report number
     const report = await prisma.$transaction(async (tx) => {
-      // Generate report number (YYYYMMDD-XXX format)
-      const date = new Date(reportDate);
-      const dateStr = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`;
-
-      const lastReport = await tx.dailyReport.findFirst({
-        where: {
-          reportNumber: {
-            startsWith: dateStr,
-          },
-        },
-        orderBy: { reportNumber: "desc" },
-      });
-
-      let sequence = 1;
-      if (lastReport) {
-        const lastSequence = safeParseInt(lastReport.reportNumber.split("-")[1]) || 0;
-        sequence = lastSequence + 1;
-      }
-      const reportNumber = `${dateStr}-${String(sequence).padStart(3, "0")}`;
+      const reportNumber = await generateReportNumber(tx, new Date(reportDate));
 
       return tx.dailyReport.create({
         data: {
