@@ -10,6 +10,8 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const customerId = searchParams.get("customerId");
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
 
     if (!customerId) {
       return NextResponse.json(
@@ -37,6 +39,9 @@ export async function GET(request: NextRequest) {
           none: {},
         },
         invoiceItemId: null,  // 請求書→日報フローでも紐付けがないことを確認
+        ...(startDate && endDate
+          ? { reportDate: { gte: new Date(startDate), lte: new Date(endDate) } }
+          : {}),
       },
       include: {
         employee: true,
