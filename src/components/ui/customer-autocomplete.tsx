@@ -52,14 +52,15 @@ export function CustomerAutocomplete({
   }, [value]);
 
   // Filter customers based on input
+  // 入力が空ならフォーカス時に全件表示、入力があれば部分一致で全件絞り込み
   useEffect(() => {
     if (inputValue.length < 1) {
-      setFilteredCustomers(customers.slice(0, 10));
+      setFilteredCustomers(customers);
     } else {
       const filtered = customers.filter((c) =>
         c.name.toLowerCase().includes(inputValue.toLowerCase())
       );
-      setFilteredCustomers(filtered.slice(0, 10));
+      setFilteredCustomers(filtered);
     }
   }, [inputValue, customers]);
 
@@ -122,7 +123,7 @@ export function CustomerAutocomplete({
         autoComplete="off"
       />
       {showSuggestions && filteredCustomers.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
+        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-72 overflow-y-auto">
           {filteredCustomers.map((customer, index) => (
             <li
               key={customer.id}
