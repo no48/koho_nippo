@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Plus, Trash2 } from "lucide-react";
+import { getCustomerBillingPeriod } from "@/lib/billing-period";
+import { getCurrentPayrollYearMonth } from "@/lib/payroll-period";
 
 type DailyReport = {
   id: number;
@@ -70,6 +72,15 @@ function NewInvoicePageContent() {
   const [initialReportIds, setInitialReportIds] = useState<number[]>([]);
   const [manualItems, setManualItems] = useState<ManualItem[]>([]);
 
+  // 締め日ベース集計用
+  const [customers, setCustomers] = useState<
+    { id: number; name: string; closingDay: string | null }[]
+  >([]);
+  const [targetYearMonth, setTargetYearMonth] = useState<string>(() =>
+    getCurrentPayrollYearMonth(new Date())
+  );
+  const [billingPeriodText, setBillingPeriodText] = useState<string>("");
+
   // Load initial report IDs from URL params
   useEffect(() => {
     const reportIdsParam = searchParams.get("reportIds");
@@ -99,31 +110,55 @@ function NewInvoicePageContent() {
     }
   }, [searchParams]);
 
+  // 得意先一覧（締め日取得用）
   useEffect(() => {
-    // Skip if we have initial report IDs (already loaded)
-    if (initialReportIds.length > 0) return;
+    const fetchCustomers = async () => {
+      try {
+        const res = await fetch("/api/customers");
+        if (res.ok) setCustomers(await res.json());
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchCustomers();
+  }, []);
 
-    if (!customerId) {
+  // 発注元＋対象月 → 締め日で期間を計算し、期間内の未請求日報を取得して全選択
+  useEffect(() => {
+    if (initialReportIds.length > 0) return; // 日報一覧からの遷移時は対象外
+
+    if (!customerId || !targetYearMonth || customers.length === 0) {
       setUnbilledReports([]);
+      setBillingPeriodText("");
       return;
     }
 
-    const fetchUnbilledReports = async () => {
+    const customer = customers.find((c) => c.id.toString() === customerId);
+    const period = getCustomerBillingPeriod(
+      customer?.closingDay ?? null,
+      targetYearMonth
+    );
+    setBillingPeriodText(period.displayText);
+
+    const start = period.startDate.toISOString().split("T")[0];
+    const end = period.endDate.toISOString().split("T")[0];
+
+    const fetchPeriodReports = async () => {
       try {
-        const response = await fetch(
-          `/api/reports/unbilled?customerId=${customerId}`
+        const res = await fetch(
+          `/api/reports/unbilled?customerId=${customerId}&startDate=${start}&endDate=${end}`
         );
-        if (response.ok) {
-          const data = await response.json();
+        if (res.ok) {
+          const data = await res.json();
           setUnbilledReports(data);
-          setSelectedReportIds([]);
+          setSelectedReportIds(data.map((r: DailyReport) => r.id)); // 期間内を全選択
         }
-      } catch (error) {
-        console.error(error);
+      } catch (e) {
+        console.error(e);
       }
     };
-    fetchUnbilledReports();
-  }, [customerId, initialReportIds]);
+    fetchPeriodReports();
+  }, [customerId, targetYearMonth, customers, initialReportIds]);
 
   const handleReportToggle = (reportId: number) => {
     setSelectedReportIds((prev) =>
@@ -299,7 +334,7 @@ function NewInvoicePageContent() {
             <CardTitle>基本情報</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="issueDate">
                   発行日 <span className="text-destructive">*</span>
@@ -326,6 +361,20 @@ function NewInvoicePageContent() {
                   placeholder="発注元名を入力"
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="targetMonth">対象月</Label>
+                <Input
+                  id="targetMonth"
+                  type="month"
+                  value={targetYearMonth}
+                  onChange={(e) => setTargetYearMonth(e.target.value)}
+                />
+                {customerId && billingPeriodText && (
+                  <p className="text-xs text-muted-foreground">
+                    対象期間: {billingPeriodText}（締め日基準）
+                  </p>
+                )}
               </div>
             </div>
           </CardContent>
