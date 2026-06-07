@@ -49,6 +49,7 @@ type DailyReport = {
   employee?: { id: number; name: string; wageType: string | null };
   origin: string;
   destination: string;
+  destinationAddress?: string | null;  // 着地の住所
   productName: string | null;
   fare: string | number;
   salary: string | number | null;
@@ -98,6 +99,7 @@ export function ReportForm({ report, isEdit = false }: ReportFormProps) {
     customerName: report?.customer?.name || "",
     origin: report?.origin || "",
     destination: report?.destination || "",
+    destinationAddress: report?.destinationAddress || "",
     productName: report?.productName || "",
     fare: report?.fare?.toString() || "",
     salary: report?.salary?.toString() || "",
@@ -470,6 +472,18 @@ export function ReportForm({ report, isEdit = false }: ReportFormProps) {
                 required
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="destinationAddress">着地の住所</Label>
+            <Input
+              id="destinationAddress"
+              value={formData.destinationAddress}
+              onChange={(e) =>
+                setFormData({ ...formData, destinationAddress: e.target.value })
+              }
+              placeholder="例: 茨城県常総市○○ 1-2-3"
+            />
           </div>
 
           <div className="space-y-2">
