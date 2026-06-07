@@ -111,6 +111,7 @@ model DailyReport {
   customerId  Int       @map("customer_id")
   origin      String
   destination String
+  destinationAddress String?   @map("destination_address")  // 着地の住所
   productName String?   @map("product_name")  // 品名
   quantity    Int?                             // 数量
   tonnage     Decimal?  @db.Decimal(5, 2)     // t数
