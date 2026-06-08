@@ -17,8 +17,8 @@ import { AutocompleteInput } from "@/components/ui/autocomplete-input";
 import { toast } from "sonner";
 import { Plus, Trash2, ChevronDown } from "lucide-react";
 
-type Employee = { id: number; name: string };
-type Truck = { id: number; vehicleNumber: string; vehicleName: string };
+type Employee = { id: number; name: string; isActive?: boolean };
+type Truck = { id: number; vehicleNumber: string; vehicleName: string; isActive?: boolean };
 type WageRate = { id: number; wageType: string; workItem: string; rate: number; sortOrder: number };
 
 type Row = {
@@ -89,6 +89,15 @@ function BatchReportContent() {
   const [rows, setRows] = useState<Row[]>(() => [newRow()]);
   // 編集モードで「更新対象」になる元の行のuid（追加行はこれと異なる＝新規作成扱い）
   const [originalUid, setOriginalUid] = useState<string | null>(null);
+  // 編集対象の日報が持つ従業員/トラック。無効(isActive=false)だと一覧APIに含まれないため、
+  // 選択肢に確実に出すために別stateで保持し、描画時にマージする（一覧取得との競合を回避）。
+  const [editEmployee, setEditEmployee] = useState<Employee | null>(null);
+  const [editTruck, setEditTruck] = useState<Truck | null>(null);
+  // 編集時、従業員/トラックの選択値は「選択肢にその項目が現れてから」セットする。
+  // 同一コミットで値とSelectItemを同時追加するとRadix Selectが項目登録の遅れで
+  // 値を空にリセットしてしまうため（無効従業員の編集で発生）、保留してeffectで確定する。
+  const [pendingEmployeeId, setPendingEmployeeId] = useState<string | null>(null);
+  const [pendingTruckId, setPendingTruckId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,8 +128,19 @@ function BatchReportContent() {
         const uid = `row-${rowCounter++}`;
         setOriginalUid(uid);
         setReportDate(new Date(r.reportDate).toISOString().split("T")[0]);
-        setEmployeeId(r.employeeId?.toString() || "");
-        setTruckId(r.truckId?.toString() || "");
+        // report取得時点で従業員/トラックの実体(include)が手に入るので先に保持（選択肢を確定させる）
+        if (r.employee)
+          setEditEmployee({ id: r.employee.id, name: r.employee.name, isActive: r.employee.isActive });
+        if (r.truck)
+          setEditTruck({
+            id: r.truck.id,
+            vehicleNumber: r.truck.vehicleNumber,
+            vehicleName: r.truck.vehicleName,
+            isActive: r.truck.isActive,
+          });
+        // 値は保留。選択肢に項目が現れてからeffectで確定する
+        setPendingEmployeeId(r.employeeId?.toString() || "");
+        setPendingTruckId(r.truckId?.toString() || "");
         setRows([
           {
             uid,
@@ -145,6 +165,33 @@ function BatchReportContent() {
     };
     fetchReport();
   }, [editId]);
+
+  // 編集対象の従業員/トラックが無効で一覧に居ない場合だけ、先頭に足して選択肢に出す
+  const employeeOptions =
+    editEmployee && !employees.some((e) => e.id === editEmployee.id)
+      ? [editEmployee, ...employees]
+      : employees;
+  const truckOptions =
+    editTruck && !trucks.some((t) => t.id === editTruck.id)
+      ? [editTruck, ...trucks]
+      : trucks;
+
+  // 保留中の選択値を、対応する選択肢が出揃ってから確定する（Radixのリセット回避）。
+  // 空("")＝未選択はそのまま即確定してよい。
+  useEffect(() => {
+    if (pendingEmployeeId === null) return;
+    if (pendingEmployeeId === "" || employeeOptions.some((e) => String(e.id) === pendingEmployeeId)) {
+      setEmployeeId(pendingEmployeeId);
+      setPendingEmployeeId(null);
+    }
+  }, [pendingEmployeeId, employeeOptions]);
+  useEffect(() => {
+    if (pendingTruckId === null) return;
+    if (pendingTruckId === "" || truckOptions.some((t) => String(t.id) === pendingTruckId)) {
+      setTruckId(pendingTruckId);
+      setPendingTruckId(null);
+    }
+  }, [pendingTruckId, truckOptions]);
 
   // 給与形態の一覧（重複排除）
   const wageTypes = [...new Set(wageRates.map((w) => w.wageType))].sort();
@@ -327,8 +374,10 @@ function BatchReportContent() {
                 <Select value={employeeId} onValueChange={setEmployeeId} required>
                   <SelectTrigger><SelectValue placeholder="従業員を選択" /></SelectTrigger>
                   <SelectContent>
-                    {employees.map((emp) => (
-                      <SelectItem key={emp.id} value={emp.id.toString()}>{emp.name}</SelectItem>
+                    {employeeOptions.map((emp) => (
+                      <SelectItem key={emp.id} value={emp.id.toString()}>
+                        {emp.name}{emp.isActive === false ? "（無効）" : ""}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -340,9 +389,9 @@ function BatchReportContent() {
                   <SelectTrigger><SelectValue placeholder="トラックを選択" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="_none">（未選択）</SelectItem>
-                    {trucks.map((t) => (
+                    {truckOptions.map((t) => (
                       <SelectItem key={t.id} value={t.id.toString()}>
-                        {t.vehicleNumber} ({t.vehicleName})
+                        {t.vehicleNumber} ({t.vehicleName}){t.isActive === false ? "（無効）" : ""}
                       </SelectItem>
                     ))}
                   </SelectContent>

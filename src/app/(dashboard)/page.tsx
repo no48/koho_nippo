@@ -153,7 +153,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             <Link
-              href="/reports/new"
+              href="/reports/batch"
               className="block text-sm text-primary hover:underline"
             >
               + 日報を登録する
