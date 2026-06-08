@@ -245,20 +245,12 @@ export default function ReportsPage() {
           <h1 className="text-3xl font-bold">日報一覧</h1>
           <p className="text-muted-foreground">日報を管理します</p>
         </div>
-        <div className="flex gap-2">
-          <Button asChild variant="outline">
-            <Link href="/reports/batch">
-              <Plus className="mr-2 h-4 w-4" />
-              まとめ入力
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href="/reports/new">
-              <Plus className="mr-2 h-4 w-4" />
-              新規登録
-            </Link>
-          </Button>
-        </div>
+        <Button asChild>
+          <Link href="/reports/batch">
+            <Plus className="mr-2 h-4 w-4" />
+            新規登録
+          </Link>
+        </Button>
       </div>
 
       {/* Month navigation */}
@@ -422,7 +414,7 @@ export default function ReportsPage() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Button variant="ghost" size="icon" asChild>
-                          <Link href={`/reports/${report.id}/edit`}>
+                          <Link href={`/reports/batch?edit=${report.id}`}>
                             <Pencil className="h-4 w-4" />
                           </Link>
                         </Button>

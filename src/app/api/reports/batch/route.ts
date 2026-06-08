@@ -15,6 +15,7 @@ type BatchRow = {
   tollFee?: string;
   distanceAllowance?: string;
   wageType?: string;
+  workItems?: string[];
 };
 
 // POST /api/reports/batch - 同一の日付/従業員/トラックで複数日報を一括作成
@@ -50,7 +51,7 @@ export async function POST(request: Request) {
     const isEmptyRow = (r: BatchRow) =>
       !r.customerId && !r.origin && !r.destination && !r.destinationAddress &&
       !r.productName && !r.quantity && !r.salary && !r.fare && !r.tollFee &&
-      !r.distanceAllowance && !r.wageType;
+      !r.distanceAllowance && !r.wageType && (!r.workItems || r.workItems.length === 0);
 
     const validRows: { customerId: number; origin: string; destination: string; row: BatchRow }[] = [];
     for (let i = 0; i < rows.length; i++) {
@@ -95,6 +96,7 @@ export async function POST(request: Request) {
             tollFee: safeParseInt(r.tollFee) ?? 0,
             distanceAllowance: safeParseInt(r.distanceAllowance) ?? 0,
             wageType: r.wageType || null,
+            workItems: r.workItems && r.workItems.length > 0 ? JSON.stringify(r.workItems) : null,
             createdById: session?.user?.id || null,
           },
         });
