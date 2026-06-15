@@ -110,6 +110,7 @@ model DailyReport {
   truckId     Int?      @map("truck_id")
   customerId  Int       @map("customer_id")
   origin      String
+  originAddress String?   @map("origin_address")  // 発地の住所
   destination String
   destinationAddress String?   @map("destination_address")  // 着地の住所
   productName String?   @map("product_name")  // 品名

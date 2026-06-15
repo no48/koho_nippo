@@ -25,9 +25,10 @@ type Row = {
   uid: string;
   customerId: string;
   customerName: string;
+  originAddress: string;
   origin: string;
-  destination: string;
   destinationAddress: string;
+  destination: string;
   productName: string;
   quantity: string;
   salary: string;
@@ -41,14 +42,14 @@ type Row = {
 let rowCounter = 0;
 const newRow = (): Row => ({
   uid: `row-${rowCounter++}`,
-  customerId: "", customerName: "", origin: "", destination: "",
-  destinationAddress: "", productName: "", quantity: "", salary: "",
+  customerId: "", customerName: "", originAddress: "", origin: "",
+  destinationAddress: "", destination: "", productName: "", quantity: "", salary: "",
   fare: "", tollFee: "0", distanceAllowance: "0", wageType: "", workItems: [],
 });
 
 // 完全な空行（必須3項目がすべて空）かどうか
 const isBlankRow = (r: Row): boolean =>
-  !r.customerId && !r.origin && !r.destination && !r.destinationAddress &&
+  !r.customerId && !r.originAddress && !r.origin && !r.destinationAddress && !r.destination &&
   !r.productName && !r.quantity && !r.salary && !r.fare &&
   r.tollFee === "0" && r.distanceAllowance === "0" && !r.wageType &&
   r.workItems.length === 0;
@@ -62,6 +63,27 @@ const parseWorkItems = (json: string | null | undefined): string[] => {
     return [];
   }
 };
+
+// カード内のラベル付き入力セル（横スクロールせず画面幅で折り返すための単位）
+function Field({
+  label,
+  required,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs text-muted-foreground">
+        {label}
+        {required && <span className="text-destructive"> *</span>}
+      </Label>
+      {children}
+    </div>
+  );
+}
 
 export default function BatchReportPage() {
   return (
@@ -146,9 +168,10 @@ function BatchReportContent() {
             uid,
             customerId: r.customerId?.toString() || "",
             customerName: r.customer?.name || "",
+            originAddress: r.originAddress || "",
             origin: r.origin || "",
-            destination: r.destination || "",
             destinationAddress: r.destinationAddress || "",
+            destination: r.destination || "",
             productName: r.productName || "",
             quantity: r.quantity != null ? String(r.quantity) : "",
             salary: r.salary != null ? String(r.salary) : "",
@@ -252,9 +275,10 @@ function BatchReportContent() {
 
   const rowPayload = (r: Row) => ({
     customerId: r.customerId,
+    originAddress: r.originAddress,
     origin: r.origin,
-    destination: r.destination,
     destinationAddress: r.destinationAddress,
+    destination: r.destination,
     productName: r.productName,
     quantity: r.quantity,
     salary: r.salary,
@@ -403,148 +427,134 @@ function BatchReportContent() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>明細（{rows.length}行）</CardTitle>
+            <CardTitle>明細（{rows.length}件）</CardTitle>
             <Button type="button" variant="outline" size="sm" onClick={addRow}>
               <Plus className="mr-2 h-4 w-4" />行を追加
             </Button>
           </CardHeader>
-          <CardContent className="overflow-x-auto pb-20">
-            <p className="mb-2 text-xs text-muted-foreground">← 表は横にスクロールできます →</p>
-            <table className="text-sm border-collapse" style={{ width: "2400px" }}>
-              <thead>
-                <tr className="border-b text-left">
-                  <th className="p-2 min-w-[160px]">得意先</th>
-                  <th className="p-2 min-w-[140px]">発地</th>
-                  <th className="p-2 min-w-[140px]">着地</th>
-                  <th className="p-2 min-w-[160px]">着地の住所</th>
-                  <th className="p-2 min-w-[120px]">品名</th>
-                  <th className="p-2 w-20">数量</th>
-                  <th className="p-2 min-w-[120px]">給与形態</th>
-                  <th className="p-2 min-w-[150px]">作業内容</th>
-                  <th className="p-2 w-24">給与</th>
-                  <th className="p-2 w-24">運賃</th>
-                  <th className="p-2 w-24">通行料</th>
-                  <th className="p-2 w-24">距離手当</th>
-                  <th className="p-2 w-10"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => {
-                  const workItemOptions = r.wageType ? itemsForWageType(r.wageType) : [];
-                  return (
-                    <tr key={r.uid} className="border-b align-top">
-                      <td className="p-1">
-                        <CustomerAutocomplete id={`cust-${r.uid}`} value={r.customerName}
-                          onSelect={(id, name) => {
-                            updateRow(r.uid, "customerId", id);
-                            updateRow(r.uid, "customerName", name);
-                          }}
-                          placeholder="得意先" />
-                      </td>
-                      <td className="p-1">
-                        <AutocompleteInput id={`origin-${r.uid}`} value={r.origin}
-                          onChange={(v) => updateRow(r.uid, "origin", v)} field="origin" placeholder="発地" />
-                      </td>
-                      <td className="p-1">
-                        <AutocompleteInput id={`dest-${r.uid}`} value={r.destination}
-                          onChange={(v) => updateRow(r.uid, "destination", v)} field="destination" placeholder="着地" />
-                      </td>
-                      <td className="p-1">
-                        <Input value={r.destinationAddress}
-                          onChange={(e) => updateRow(r.uid, "destinationAddress", e.target.value)} placeholder="住所" />
-                      </td>
-                      <td className="p-1">
-                        <Input value={r.productName}
-                          onChange={(e) => updateRow(r.uid, "productName", e.target.value)} placeholder="品名" />
-                      </td>
-                      <td className="p-1">
-                        <Input type="number" value={r.quantity}
-                          onChange={(e) => updateRow(r.uid, "quantity", e.target.value)} />
-                      </td>
-                      <td className="p-1">
-                        <Select value={r.wageType || "_none"}
-                          onValueChange={(v) => changeWageType(r.uid, v === "_none" ? "" : v)}>
-                          <SelectTrigger><SelectValue placeholder="形態" /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="_none">（未選択）</SelectItem>
-                            {wageTypes.map((wt) => (
-                              <SelectItem key={wt} value={wt}>{wt}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </td>
-                      <td className="p-1">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              disabled={!r.wageType}
-                              className="w-full justify-between font-normal"
-                            >
-                              <span className="truncate">
-                                {r.workItems.length > 0 ? r.workItems.join("、") : "作業内容"}
-                              </span>
-                              <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start" className="w-56">
-                            {workItemOptions.length === 0 ? (
-                              <div className="px-2 py-1.5 text-xs text-muted-foreground">
-                                給与形態を選択してください
-                              </div>
-                            ) : (
-                              workItemOptions.map((wr) => (
-                                <DropdownMenuCheckboxItem
-                                  key={wr.id}
-                                  checked={r.workItems.includes(wr.workItem)}
-                                  onCheckedChange={() => toggleWorkItem(r.uid, wr.workItem)}
-                                  onSelect={(e) => e.preventDefault()}
-                                >
-                                  <span className="flex-1">{wr.workItem}</span>
-                                  <span className="ml-2 text-muted-foreground">
-                                    ¥{Number(wr.rate).toLocaleString()}
-                                  </span>
-                                </DropdownMenuCheckboxItem>
-                              ))
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                      <td className="p-1">
-                        <Input
-                          type="number"
-                          value={r.salary}
-                          onChange={(e) => updateRow(r.uid, "salary", e.target.value)}
-                          className={r.workItems.length > 0 ? "bg-muted" : ""}
-                          title={r.workItems.length > 0 ? "作業内容から自動計算（手入力で上書き可）" : undefined}
-                        />
-                      </td>
-                      <td className="p-1">
-                        <Input type="number" value={r.fare}
-                          onChange={(e) => updateRow(r.uid, "fare", e.target.value)} />
-                      </td>
-                      <td className="p-1">
-                        <Input type="number" value={r.tollFee}
-                          onChange={(e) => updateRow(r.uid, "tollFee", e.target.value)} />
-                      </td>
-                      <td className="p-1">
-                        <Input type="number" value={r.distanceAllowance}
-                          onChange={(e) => updateRow(r.uid, "distanceAllowance", e.target.value)} />
-                      </td>
-                      <td className="p-1">
-                        {r.uid !== originalUid && (
-                          <Button type="button" variant="ghost" size="icon" onClick={() => removeRow(r.uid)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
+          <CardContent className="space-y-4">
+            {rows.map((r, idx) => {
+              const workItemOptions = r.wageType ? itemsForWageType(r.wageType) : [];
+              return (
+                <div key={r.uid} className="rounded-lg border p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-sm font-medium text-muted-foreground">{idx + 1}件目</span>
+                    {r.uid !== originalUid && (
+                      <Button type="button" variant="ghost" size="icon" className="h-7 w-7"
+                        onClick={() => removeRow(r.uid)} aria-label="この明細を削除">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    <Field label="得意先" required>
+                      <CustomerAutocomplete id={`cust-${r.uid}`} value={r.customerName}
+                        onSelect={(id, name) => {
+                          updateRow(r.uid, "customerId", id);
+                          updateRow(r.uid, "customerName", name);
+                        }}
+                        placeholder="得意先" />
+                    </Field>
+                    <Field label="発地住所">
+                      <Input value={r.originAddress}
+                        onChange={(e) => updateRow(r.uid, "originAddress", e.target.value)} placeholder="住所" />
+                    </Field>
+                    <Field label="発地" required>
+                      <AutocompleteInput id={`origin-${r.uid}`} value={r.origin}
+                        onChange={(v) => updateRow(r.uid, "origin", v)} field="origin" placeholder="発地" />
+                    </Field>
+                    <Field label="着地住所">
+                      <Input value={r.destinationAddress}
+                        onChange={(e) => updateRow(r.uid, "destinationAddress", e.target.value)} placeholder="住所" />
+                    </Field>
+                    <Field label="着地" required>
+                      <AutocompleteInput id={`dest-${r.uid}`} value={r.destination}
+                        onChange={(v) => updateRow(r.uid, "destination", v)} field="destination" placeholder="着地" />
+                    </Field>
+                    <Field label="品名">
+                      <Input value={r.productName}
+                        onChange={(e) => updateRow(r.uid, "productName", e.target.value)} placeholder="品名" />
+                    </Field>
+                    <Field label="数量">
+                      <Input type="number" value={r.quantity}
+                        onChange={(e) => updateRow(r.uid, "quantity", e.target.value)} />
+                    </Field>
+                    <Field label="給与形態">
+                      <Select value={r.wageType || "_none"}
+                        onValueChange={(v) => changeWageType(r.uid, v === "_none" ? "" : v)}>
+                        <SelectTrigger><SelectValue placeholder="形態" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="_none">（未選択）</SelectItem>
+                          {wageTypes.map((wt) => (
+                            <SelectItem key={wt} value={wt}>{wt}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                    <Field label="作業内容">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={!r.wageType}
+                            className="w-full justify-between font-normal"
+                          >
+                            <span className="truncate">
+                              {r.workItems.length > 0 ? r.workItems.join("、") : "作業内容"}
+                            </span>
+                            <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
                           </Button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-56">
+                          {workItemOptions.length === 0 ? (
+                            <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                              給与形態を選択してください
+                            </div>
+                          ) : (
+                            workItemOptions.map((wr) => (
+                              <DropdownMenuCheckboxItem
+                                key={wr.id}
+                                checked={r.workItems.includes(wr.workItem)}
+                                onCheckedChange={() => toggleWorkItem(r.uid, wr.workItem)}
+                                onSelect={(e) => e.preventDefault()}
+                              >
+                                <span className="flex-1">{wr.workItem}</span>
+                                <span className="ml-2 text-muted-foreground">
+                                  ¥{Number(wr.rate).toLocaleString()}
+                                </span>
+                              </DropdownMenuCheckboxItem>
+                            ))
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </Field>
+                    <Field label="給与">
+                      <Input
+                        type="number"
+                        value={r.salary}
+                        onChange={(e) => updateRow(r.uid, "salary", e.target.value)}
+                        className={r.workItems.length > 0 ? "bg-muted" : ""}
+                        title={r.workItems.length > 0 ? "作業内容から自動計算（手入力で上書き可）" : undefined}
+                      />
+                    </Field>
+                    <Field label="運賃">
+                      <Input type="number" value={r.fare}
+                        onChange={(e) => updateRow(r.uid, "fare", e.target.value)} />
+                    </Field>
+                    <Field label="通行料">
+                      <Input type="number" value={r.tollFee}
+                        onChange={(e) => updateRow(r.uid, "tollFee", e.target.value)} />
+                    </Field>
+                    <Field label="距離手当">
+                      <Input type="number" value={r.distanceAllowance}
+                        onChange={(e) => updateRow(r.uid, "distanceAllowance", e.target.value)} />
+                    </Field>
+                  </div>
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
 

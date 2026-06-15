@@ -6,6 +6,7 @@ import { generateReportNumber } from "@/lib/report-number";
 type BatchRow = {
   customerId?: string;
   origin?: string;
+  originAddress?: string;
   destination?: string;
   destinationAddress?: string;
   productName?: string;
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
 
     // 完全な空行はスキップ、一部入力で必須欠けはエラー
     const isEmptyRow = (r: BatchRow) =>
-      !r.customerId && !r.origin && !r.destination && !r.destinationAddress &&
+      !r.customerId && !r.origin && !r.originAddress && !r.destination && !r.destinationAddress &&
       !r.productName && !r.quantity && !r.salary && !r.fare && !r.tollFee &&
       !r.distanceAllowance && !r.wageType && (!r.workItems || r.workItems.length === 0);
 
@@ -87,6 +88,7 @@ export async function POST(request: Request) {
             truckId: parsedTruckId || null,
             customerId: v.customerId,
             origin: v.origin,
+            originAddress: r.originAddress || null,
             destination: v.destination,
             destinationAddress: r.destinationAddress || null,
             productName: r.productName || null,
